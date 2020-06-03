@@ -1,0 +1,16 @@
+<package format="2">
+  <name>ros_model_parser</name>
+  <version>0.0.1</version>
+  <description>Parser for the ros-model DLSs</description>
+
+  <author email="nadia.hammoudeh.garcia@ipa.fraunhofer.de">Nadia Hammoudeh Garcia</author>
+  <maintainer email="nadia.hammoudeh.garcia@ipa.fraunhofer.de">Nadia Hammoudeh Garcia</maintainer>
+  <license>Apache 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rospkg</exec_depend>
+
+</package>
+

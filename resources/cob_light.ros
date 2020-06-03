@@ -1,0 +1,18 @@
+PackageSet { package { 
+  CatkinPackage cob_light { artifact {
+    Artifact cob_light {
+      node Node { name cob_light
+        serviceserver {
+          ServiceServer { name 'set_light' service 'cob_light.SetLightMode'},
+          ServiceServer { name 'stop_mode' service 'cob_light.StopLightMode'}}
+        publisher {
+          Publisher { name '/diagnostics' message 'diagnostic_msgs.DiagnosticArray'},
+          Publisher { name 'marker' message 'visualization_msgs.Marker'},
+          Publisher { name 'debug' message 'std_msgs.ColorRGBA'},
+          Publisher { name 'debugMulti' message 'cob_light.ColorRGBAArray'}}
+        subscriber {
+          Subscriber { name '/scan_unified' message 'sensor_msgs.LaserScan'},
+          Subscriber { name 'command' message 'cob_light.ColorRGBAArray'}}
+        actionserver {
+          ActionServer { name 'set_light' action 'cob_light.SetLightModeAct'}}
+}}}}}}
