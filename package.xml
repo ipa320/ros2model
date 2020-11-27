@@ -9,6 +9,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
+  <exec_depend>ros_graph_parser</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rospkg</exec_depend>
 
