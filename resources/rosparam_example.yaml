@@ -1,0 +1,8 @@
+vel_zero: 0 
+max_vel : 0.5
+save_filename: "institute_name_robot_name_"
+speed_x_text: "Time in seconds"
+speed_y_text: "Speed in m/s"
+speed_title: "Speed profile"
+speed_resolution: 2
+recorder_stop_offset: 5
