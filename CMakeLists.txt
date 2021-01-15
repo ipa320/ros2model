@@ -9,6 +9,12 @@ catkin_python_setup()
 
 catkin_package()
 
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(tests/model_generators_roslaunch_test.xml)
+endif()
+
 # INSTALL
 catkin_install_python(PROGRAMS 
   scripts/parsers/ros_system_parser_example.py 
@@ -19,6 +25,6 @@ catkin_install_python(PROGRAMS
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY resources
+install(DIRECTORY resources tests
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

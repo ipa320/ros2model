@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!--PARSERS-->
+  <group ns="rosmodel_parser__">
+    <node pkg="ros_model_parser" name="ros_parser_example" type="ros_parser_example.py" output="screen"/>
+  </group>
+
+  <group ns="ros_system_model_parser__">
+    <node pkg="ros_model_parser" name="ros_system_parser_example" type="ros_system_parser_example.py" output="screen"/>
+  </group>
+
+  <!--GENERATORS-->
+  <group ns="rosmodel_generator__">
+    <node pkg="ros_model_parser" name="ros_model_generator_example" type="ros_model_generator_example.py" output="screen"/>
+  </group>
+
+  <group ns="ros_system_model_generator__">
+    <node pkg="ros_model_parser" name="ros_system_model_generator_example" type="ros_system_model_generator_example.py" output="screen"/>
+  </group>
+
+</launch>
+
+
