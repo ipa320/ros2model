@@ -15,7 +15,7 @@ def ros_model_generator_test():
     ros_model.addPublisher("my_pub","std_msgs/Bool")
     ros_model.addParameter("myIntParam",25)
 
-    ros_model.dump_java_ros_model("/tmp/test")
+    ros_model.dump_java_ros_model("/tmp/test.ros")
 
 if __name__ == '__main__':
     try:

@@ -12,7 +12,7 @@ def ros_system_model_generator_test():
     ros_system_model.addParameter("mystring","test")
     ros_system_model.addParameter("myIntParam",25)
 
-    ros_system_model.dump_java_ros_system_model("/tmp/test")
+    ros_system_model.dump_java_ros_system_model("/tmp/test.rossystem")
 
 if __name__ == '__main__':
     try:
