@@ -66,11 +66,11 @@ class RosModelParser(object):
             lambda tokens: float(tokens[0])) | string_value | Keyword("false") | Keyword("true") | listStr | mapStr
 
         _packageSet = Keyword("PackageSet").suppress()
-        _package = Keyword("package").suppress()
+        #_package = Keyword("package").suppress()
         _catkin_pkg = Keyword("CatkinPackage").suppress()
-        _artifact = Keyword("artifact").suppress()
+        #_artifact = Keyword("artifact").suppress()
         _artifacts = Keyword("Artifact").suppress()
-        _node = Keyword("node").suppress()
+        #_node = Keyword("node").suppress()
         _nodes = Keyword("Node").suppress()
         _name = CaselessKeyword("name").suppress()
 
@@ -79,36 +79,33 @@ class RosModelParser(object):
         _topic_type= Keyword("message").suppress()
 
         # Service Server
-        _service_svrs= Keyword("serviceserver").suppress()
+        _service_svrs= Keyword("ServiceServers").suppress()
         _service_svr= Keyword("ServiceServer").suppress()
         service_svr = Group( _service_svr + OCB + _name + name("name") + _srv_type + name("type") + CCB)
         service_svrs = (_service_svrs + OCB + OneOrMore(service_svr + Optional(",").suppress()) + CCB)
 
         # Service Client
-        _service_clis= Keyword("serviceclient").suppress()
+        _service_clis= Keyword("ServiceClients").suppress()
         _service_cli= Keyword("ServiceClient").suppress()
         service_cli = Group( _service_cli + OCB + _name + name("name") + _srv_type + name("type") + CCB)
         service_clis = (_service_clis + OCB + OneOrMore(service_cli + Optional(",").suppress()) + CCB)
 
         # Publisher
-        _pubs= Keyword("publisher").suppress()
+        _pubs= Keyword("Publishers").suppress()
         _pub= Keyword("Publisher").suppress()
         pub = Group( _pub + OCB + _name + name("name") + _topic_type + name("type") + CCB)
         pubs = (_pubs + OCB + OneOrMore(pub + Optional(",").suppress()) + CCB)
 
-		# Subscriber
-        _subs= Keyword("subscriber").suppress()
+        # Subscriber
+        _subs= Keyword("Subscribers").suppress()
         _sub= Keyword("Subscriber").suppress()
         sub = Group( _sub + OCB + _name + name("name") + _topic_type + name("type") + CCB)
         subs = (_subs + OCB + OneOrMore(sub + Optional(",").suppress()) + CCB)
 
         self.rospkg_grammar = _packageSet + \
             OCB + \
-            _package + OCB + \
             _catkin_pkg + name("pkg_name") + OCB + \
-            _artifact + OCB + \
             _artifacts + name("artifact_name") + OCB + \
-            _node + \
             _nodes + OCB + _name + name("node_name") + \
             Optional(service_svrs)("svr_servers") + \
             Optional(pubs)("publishers") + \
