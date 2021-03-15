@@ -4,6 +4,8 @@
   <description>Parser for the ros-model DLSs</description>
 
   <author email="nadia.hammoudeh.garcia@ipa.fraunhofer.de">Nadia Hammoudeh Garcia</author>
+  <author email="harshavardhan.deshpande@ipa.fraunhofer.de">Harsh Deshpande</author>
+
   <maintainer email="nadia.hammoudeh.garcia@ipa.fraunhofer.de">Nadia Hammoudeh Garcia</maintainer>
   <license>Apache 2.0</license>
 
