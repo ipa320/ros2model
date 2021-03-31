@@ -57,12 +57,12 @@ class RosModelGenerator(object):
       outfile.write(ros_model_str)
 
   def create_ros_model(self):
-    ros_model_str = "PackageSet { package { \n"
+    ros_model_str = "PackageSet {\n"
     ros_model_str += "  CatkinPackage "+self.package_name + " { "
-    ros_model_str += "artifact {\n"
+    ros_model_str += "\n"
     ros_model_str += self.node.dump_java_ros_model()
     ros_model_str = ros_model_str[:-2]
-    ros_model_str += "\n}}}}"
+    ros_model_str += "\n}}"
     return True, ros_model_str
 
 

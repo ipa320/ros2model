@@ -39,17 +39,20 @@ def parseActionDict(string, location, tokens):
 
 class RosSystemModelParser(object):
     def __init__(self, model, isFile=True):
-        # OCB = Open Curly Bracket {}
+        # OCB = Open Curly Bracket {
         # CCB = Close Curly Bracket }
         # ORB = Open Round Bracket (
         # CRB = Close Round Bracket )
         # SQ = Single Quotes '
+        # DQ = Double Quotes "
         # OSB = Open Square Bracket [
         # CSB = Close Square Bracket ]
 
-        OCB, CCB, ORB, CRB, SQ, OSB, CSB = map(Suppress, "{}()'[]")
-        name = Optional(SQ) + Word(printables,
-                                   excludeChars="{},'") + Optional(SQ)
+
+        OCB, CCB, ORB, CRB, SQ, DQ, OSB, CSB = map(Suppress, "{}()'\"[]")
+        
+        name = Optional(SQ) + Optional(DQ) + Word(printables,
+                                   excludeChars="{},'") + Optional(SQ) + Optional(DQ)
 
         real = Combine(Word(nums) + '.' + Word(nums))
 
@@ -118,6 +121,7 @@ class RosSystemModelParser(object):
         _g_parameters = Keyword("Parameters").suppress()
         _g_parameter = Keyword("Parameter").suppress()
         _type = Keyword("type").suppress()
+        _value = Keyword("value").suppress()
 
         listStr << delimitedList(Group(OCB + delimitedList(values) + CCB))
         mapStr << (OSB + delimitedList(Group(OCB + delimitedList((Group(
@@ -127,7 +131,7 @@ class RosSystemModelParser(object):
         param_value << _value + (values | listStr)
 
         parameter = Group(_parameter + name("param_name") +
-                          OCB + _ref_parameter + name("param_path") + param_value("param_value") + CCB)
+                          OCB + _ref_parameter + name("param_path") + Optional(param_value("param_value")) + CCB)
         parameters = (_parameters + OCB +
                       OneOrMore(parameter + Optional(",").suppress()) + CCB)
 
@@ -169,7 +173,7 @@ class RosSystemModelParser(object):
                              OneOrMore(topic_connection + Optional(",").suppress()) + CCB)
 
         g_parameter = Group(_g_parameter + OCB + _name + name("param_name") +
-                            _type + name("value_type") + param_value("param_value") + CCB)
+                            _type + name("value_type") + Optional(param_value("param_value")) + CCB)
         g_parameters = (_g_parameters + OCB +
                       OneOrMore(g_parameter + Optional(",").suppress()) + CCB)
 
