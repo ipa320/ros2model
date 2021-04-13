@@ -16,7 +16,7 @@
 
 import pprint
 from pyparsing import *
-import ros_graph_parser.core_class as model
+import ros_model_generator.rosgraph_interface as model
 
 class RosSystemModelGenerator(object):
   def __init__(self):
@@ -27,7 +27,7 @@ class RosSystemModelGenerator(object):
     self.system_name = name;
 
   def addParameter(self, name, value):
-    self.parameters.append(model.ParameterInterface(name, value, type(value)))
+    self.parameters.append(model.JavaParameterInterface(name, value, type(value)))
 
   def dump_java_ros_system_model(self, rosystem_model_file):
     sucess, ros_system_model_str = self.create_ros_system_model()

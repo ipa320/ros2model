@@ -16,14 +16,14 @@
 
 import pprint
 from pyparsing import *
-import ros_graph_parser.core_class as model
+import ros_model_generator.rosgraph_interface as model
 
 class RosModelGenerator(object):
   def __init__(self):
     self.package_name= ""
     self.node_name = ""
     self.artifact_name = ""
-    self.node=model.Node(self.node_name)
+    self.node=model.JavaNode(self.node_name)
 
   def setPackageName(self, name):
     self.package_name = name;
@@ -34,22 +34,22 @@ class RosModelGenerator(object):
     self.node.name = name;
 
   def addPublisher(self, name, topic_type):
-    self.node.publishers.add(model.Interface(name,topic_type))
+    self.node.publishers.add(model.JavaInterface(name,topic_type))
   def addSubscriber(self, name, topic_type):
-    self.node.subscribers.add(model.Interface(name, topic_type))
+    self.node.subscribers.add(model.JavaInterface(name, topic_type))
 
   def addServiceServer(self, name, srv_type):
-    self.node.service_servers.add(model.Interface(name, srv_type))
+    self.node.service_servers.add(model.JavaInterface(name, srv_type))
   def addServiceClient(self, name, srv_type):
-    self.node.service_clients.add(model.Interface(name, srv_type))
+    self.node.service_clients.add(model.JavaInterface(name, srv_type))
 
   def addActionServer(self, name, act_type):
-    self.node.action_servers.add(model.Interface(name, act_type))
+    self.node.action_servers.add(model.JavaInterface(name, act_type))
   def addActionClient(self, name, act_type):
-    self.node.action_clients.add(model.Interface(name, act_type))
+    self.node.action_clients.add(model.JavaInterface(name, act_type))
 
   def addParameter(self, name, value):
-    self.node.params.add(model.ParameterInterface(name, value, type(value)))
+    self.node.params.add(model.JavaParameterInterface(name, value, type(value)))
 
   def dump_java_ros_model(self, ros_model_file):
     sucess, ros_model_str = self.create_ros_model()
