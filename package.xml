@@ -12,7 +12,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   
   <depend>rospy</depend>
-  <exec_depend>ros_graph_parser</exec_depend>
   <exec_depend>python-rospkg</exec_depend>
 
   <test_depend>roslaunch</test_depend>

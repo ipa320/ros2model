@@ -16,18 +16,20 @@
 
 import pprint
 from pyparsing import *
-import ros_model_generator.rosgraph_interface as model
+import metamodel.metamodel_core as model
 
 class RosSystemModelGenerator(object):
-  def __init__(self):
-    self.system_name= ""
-    self.parameters=list()
+  def __init__(self,name=""):
+    self.system = model.RosSystem(name);
 
   def setSystemName(self, name):
-    self.system_name = name;
+    self.system.name = name;
 
   def addParameter(self, name, value):
-    self.parameters.append(model.JavaParameterInterface(name, value, type(value)))
+    self.system.params.add(model.Parameter(name, value, type(value)))
+
+  def addComponent(self, name):
+    self.system.components.add(model.Component(name))
 
   def dump_java_ros_system_model(self, rosystem_model_file):
     sucess, ros_system_model_str = self.create_ros_system_model()
@@ -35,18 +37,7 @@ class RosSystemModelGenerator(object):
       outfile.write(ros_system_model_str)
 
   def create_ros_system_model(self):
-    ros_system_model_str = "RosSystem { Name '"+self.system_name+"' \n"
-    if len(self.parameters)>0:
-      ros_system_model_str+="  Parameters {\n"
-      for param in self.parameters:
-        ros_system_model_str += "   Parameter { name "+param.resolved+" type "+param.itype+" value "
-        if param.itype=="String":
-          ros_system_model_str +='"'+param.value+'"},\n'
-        else:
-          ros_system_model_str +=str(param.value)+"},\n"
-      ros_system_model_str = ros_system_model_str[:-2]
-      ros_system_model_str+="\n  }"
-    ros_system_model_str += "\n}"
+    ros_system_model_str = self.system.dump_xtext_model()
     return True, ros_system_model_str
 
 
