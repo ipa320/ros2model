@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import ros_graph_parser.core_class as model
+from ros_graph_parser.core_class import *
 
 
 class JavaInterface(Interface):
