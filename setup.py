@@ -18,7 +18,7 @@ from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
-   packages=['ros_model_parser','ros_model_generator'],
+   packages=['ros_model_parser','ros_model_generator','metamodel'],
    package_dir={'': 'src'}
 )
 

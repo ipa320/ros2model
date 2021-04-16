@@ -18,7 +18,7 @@ env:
     - PYLINT3_CHECK=true
     - ROS_REPO=testing
   matrix:
-    - ROS_DISTRO=melodic UPSTREAM_WORKSPACE=.travis.rosinstall.melodic
+    - ROS_DISTRO=melodic
 install:
   - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .industrial_ci
 script:

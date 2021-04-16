@@ -16,7 +16,8 @@
 
 import pprint
 from pyparsing import *
-import ros_graph_parser.core_class as model
+import metamodel.metamodel_core as model
+
 
 class RosModelGenerator(object):
   def __init__(self):
@@ -27,8 +28,10 @@ class RosModelGenerator(object):
 
   def setPackageName(self, name):
     self.package_name = name;
+
   def setArtifactName(self, name):
     self.artifact_name = name;
+
   def setNodeName(self, name):
     self.node_name = name;
     self.node.name = name;
@@ -49,9 +52,9 @@ class RosModelGenerator(object):
     self.node.action_clients.add(model.Interface(name, act_type))
 
   def addParameter(self, name, value):
-    self.node.params.add(model.ParameterInterface(name, value, type(value)))
+    self.node.params.add(model.Parameter(name, value, type(value)))
 
-  def dump_java_ros_model(self, ros_model_file):
+  def dump_ros_model(self, ros_model_file):
     sucess, ros_model_str = self.create_ros_model()
     with open(ros_model_file, 'w') as outfile:
       outfile.write(ros_model_str)
@@ -60,7 +63,7 @@ class RosModelGenerator(object):
     ros_model_str = "PackageSet {\n"
     ros_model_str += "  CatkinPackage "+self.package_name + " { "
     ros_model_str += "\n"
-    ros_model_str += self.node.dump_java_ros_model()
+    ros_model_str += self.node.dump_xtext_model()
     ros_model_str = ros_model_str[:-2]
     ros_model_str += "\n}}"
     return True, ros_model_str
@@ -69,7 +72,7 @@ class RosModelGenerator(object):
 if __name__ == "__main__":
   generator = RosModelGenerator()
   try:
-    print(generator.dump_java_ros_model("/tmp/test").dump())
+    print(generator.dump_ros_model("/tmp/test").dump())
   except Exception as e:
     print(e.args)
 
