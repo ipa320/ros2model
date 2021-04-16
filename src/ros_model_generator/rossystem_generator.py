@@ -30,6 +30,8 @@ class RosSystemModelGenerator(object):
 
   def addComponent(self, name):
     self.system.components.add(model.Component(name))
+  def addComponent(self, component):
+    self.system.components.add(component)
 
   def dump_java_ros_system_model(self, rosystem_model_file):
     sucess, ros_system_model_str = self.create_ros_system_model()
@@ -40,6 +42,31 @@ class RosSystemModelGenerator(object):
     ros_system_model_str = self.system.dump_xtext_model()
     return True, ros_system_model_str
 
+  def create_ros_system_model(self, node_names, pubs, subs, topics_dict, services_dict):
+    for name in node_names:
+      component = model.Component(name)
+      for pub, node_name in pubs:
+          # if not check_black_list(pub, BLACK_LIST_TOPIC):
+          #     continue
+          if name in node_name:
+              # component.publishers.add(rg.Interface(pub, topics_dict[pub]))
+              # component.publishers.add(model.RosInterface(pub, topics_dict[pub]))
+              print(name)
+              print(pub)
+              print(node_name)
+      # for sub, nodes_name in subs:
+      #     if not check_black_list(sub, BLACK_LIST_TOPIC):
+      #         continue
+      #     if n in nodes_name:
+      #         node.subscribers.add(rg.Interface(sub, topics_dict[sub]))
+      # for serv, nodes_name in services:
+      #     if not check_black_list(serv, BLACK_LIST_SERV):
+      #         continue
+      #     if n in nodes_name:
+      #         node.services.add(rg.Interface(serv, services_dict[serv]))
+
+      # node.check_actions()
+      # nodes.append(node)
 
 if __name__ == "__main__":
   generator = RosSystemModelGenerator()
