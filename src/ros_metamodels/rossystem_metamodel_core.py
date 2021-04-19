@@ -74,7 +74,7 @@ class RosInterface(object):
 
     def dump_xtext_model(self, indent, name_type, interface_type):
         return ("%s%s { name '%s' %s '%s'}") % (
-            indent, name_type, self.resolved, interface_type, self.itype.replace("/", "."))
+            indent, name_type, self.resolved, interface_type, self.reference.replace("/", "."))
 
 class ComponentSet(set):
     def get_list(self):
@@ -101,7 +101,7 @@ class RosInterfaceSet(set):
         return [x.get_dict() for x in self]
 
     def iteritems(self):
-        return [(x.resolved, x.itype) for x in self]
+        return [(x.resolved, x.reference) for x in self]
 
     def iterkeys(self):
         return [x.resolved for x in self]
