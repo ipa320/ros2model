@@ -16,11 +16,12 @@
 
 import pprint
 from pyparsing import *
-import ros_metamodels.rossystem_metamodel_core as model
+import ros_metamodels.rossystem_metamodel_core as system_model
+import ros_metamodels.ros_metamodel_core as model
 
 class RosSystemModelGenerator(object):
   def __init__(self,name=""):
-    self.system = model.RosSystem(name);
+    self.system = system_model.RosSystem(name);
 
   def setSystemName(self, name):
     self.system.name = name;
@@ -29,12 +30,18 @@ class RosSystemModelGenerator(object):
     self.system.params.add(model.Parameter(name, value, type(value)))
 
   def addComponent(self, name):
-    self.system.components.add(model.Component(name))
+    self.system.components.add(system_model.Component(name))
+
   def addComponent(self, component):
     self.system.components.add(component)
 
-  def dump_java_ros_system_model(self, rosystem_model_file):
+  def dump_ros_system_model(self, rosystem_model_file):
     sucess, ros_system_model_str = self.create_ros_system_model()
+    with open(rosystem_model_file, 'w') as outfile:
+      outfile.write(ros_system_model_str)
+
+  def dump_ros_system_model_list(self, components, rosystem_model_file):
+    sucess, ros_system_model_str = self.create_ros_system_model_list(components)
     with open(rosystem_model_file, 'w') as outfile:
       outfile.write(ros_system_model_str)
 
@@ -42,31 +49,38 @@ class RosSystemModelGenerator(object):
     ros_system_model_str = self.system.dump_xtext_model()
     return True, ros_system_model_str
 
-  def create_ros_system_model(self, node_names, pubs, subs, topics_dict, services_dict):
-    for name in node_names:
-      component = model.Component(name)
-      for pub, node_name in pubs:
-          # if not check_black_list(pub, BLACK_LIST_TOPIC):
-          #     continue
-          if name in node_name:
-              # component.publishers.add(rg.Interface(pub, topics_dict[pub]))
-              # component.publishers.add(model.RosInterface(pub, topics_dict[pub]))
-              print(name)
-              print(pub)
-              print(node_name)
-      # for sub, nodes_name in subs:
-      #     if not check_black_list(sub, BLACK_LIST_TOPIC):
-      #         continue
-      #     if n in nodes_name:
-      #         node.subscribers.add(rg.Interface(sub, topics_dict[sub]))
-      # for serv, nodes_name in services:
-      #     if not check_black_list(serv, BLACK_LIST_SERV):
-      #         continue
-      #     if n in nodes_name:
-      #         node.services.add(rg.Interface(serv, services_dict[serv]))
+  def create_ros_system_model_list(self, components):
+    for name in components:
+      component = system_model.Component(name)
 
-      # node.check_actions()
-      # nodes.append(node)
+      publishers = components[name]['publishers']
+      for pub, pub_type in publishers.items():
+        component.publishers.add(system_model.RosInterface(pub, pub_type))
+
+      subscribers = components[name]['publishers']
+      for sub, sub_type in subscribers.items():
+        component.subscribers.add(system_model.RosInterface(sub, sub_type))
+
+      service_servers = components[name]['service_servers']
+      for serv, serv_type in service_servers.items():
+        component.service_servers.add(system_model.RosInterface(serv, serv_type))
+
+      service_clients = components[name]['service_clients']
+      for serv, serv_type in service_clients.items():
+        component.service_clients.add(system_model.RosInterface(serv, serv_type))
+
+      action_clients = components[name]['action_clients']
+      for action, action_type in action_clients.items():
+        component.action_clients.add(system_model.RosInterface(action, action_type))
+
+      action_servers = components[name]['action_servers']
+      for action, action_type in action_servers.items():
+        component.action_servers.add(system_model.RosInterface(action, action_type))
+
+      self.addComponent(component)
+
+    return self.create_ros_system_model()
+
 
 if __name__ == "__main__":
   generator = RosSystemModelGenerator()
