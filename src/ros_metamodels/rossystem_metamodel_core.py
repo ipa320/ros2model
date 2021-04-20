@@ -57,9 +57,9 @@ class Component(object):
         system_model_str += self.service_servers.dump_xtext_model(
             "            ", "SrvServers", "Server", self.name, package, "ServiceServer")
         system_model_str += self.action_servers.dump_xtext_model(
-            "            ", "ActionServers", "ActionServer", self.name, package)
+            "            ", "ActionServers", "Server", self.name, package)
         system_model_str += self.action_clients.dump_xtext_model(
-            "            ", "ActionClients", "ActionClient", self.name, package)
+            "            ", "ActionClients", "Client", self.name, package)
         system_model_str += self.params.dump_xtext_model(
             "            ", "Parameters", "Parameter", self.name, package)
         system_model_str += "        },\n"
