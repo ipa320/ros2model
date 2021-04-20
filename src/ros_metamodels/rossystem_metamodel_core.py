@@ -28,7 +28,7 @@ class RosSystem(object):
         system_model_str += "    RosComponents ( \n"
         system_model_str += self.components.dump_xtext_model()
         system_model_str = system_model_str[:-2]
-        system_model_str += "\n)"
+        system_model_str += "}\n)"
         system_model_str += self.params.dump_xtext_model(
             "        ", "Parameters", "Parameters")
         system_model_str += "}"
@@ -62,7 +62,7 @@ class Component(object):
             "            ", "ActionClients", "ActionClient", self.name, package)
         system_model_str += self.params.dump_xtext_model(
             "            ", "Parameters", "Parameter", self.name, package)
-        system_model_str += "},\n"
+        system_model_str += "        },\n"
         return system_model_str
 
 class RosInterface(object):
@@ -89,11 +89,10 @@ class ComponentSet(set):
     def dump_xtext_model(self, indent="", value="", name_block=""):
         if len(self) == 0:
             return ""
-        str_ = ("\n%s%s {\n") % (indent, name_block)
+        str_ = ("\n%s%s") % (indent, name_block)
         for elem in self:
-            str_ += elem.dump_xtext_model() + ",\n"
+            str_ += elem.dump_xtext_model() + "\n"
         str_ = str_[:-2]
-        str_ += "}"
         return str_
 
 class RosInterfaceSet(set):
