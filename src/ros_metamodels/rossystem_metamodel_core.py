@@ -76,6 +76,69 @@ class RosInterface(object):
         return ("%s%s { name '%s' %s '%s'}") % (
             indent, name_type, self.resolved, interface_type, self.reference.replace("/", "."))
 
+class RosParameter(object):
+    def __init__(self, name, value, namespace=""):
+        self.resolved = name
+        self.namespace = namespace
+        self.minimal = name[len(self.namespace)-1:]
+        self.value = value
+        self.count = 0
+
+    def __eq__(self, other):
+        if self.value == other.value and self.resolved == other.resolved:
+            return True
+        else:
+            return False
+
+    def get_type(self, value):
+        itype = type(value)
+        itype = (str(itype)).replace("<type '", "").replace("'>", "")
+        if itype == 'float':
+            return 'Double'
+        elif itype == 'bool':
+            return 'Boolean'
+        elif itype == 'int':
+            return 'Integer'
+        elif itype == 'str':
+            return 'String'
+        elif itype == 'list' or itype == 'dict':
+            if ":" in str(value):
+                return 'Struct'
+            else:
+                return 'List'
+        else:
+            return itype
+
+    def set_value(self, value, indent):
+        str_param_value = ""
+        if self.itype == "String":
+            str_param_value += "'"+self.value+"'"
+        elif self.itype == "Boolean":
+            str_param_value += str(self.value).lower()
+        elif self.itype == "List":
+            str_param_value += str(self.value).replace(
+                "[", "{").replace("]", "}")
+        elif self.itype == 'Struct':
+            str_param_value += self.value_struct(self.value[0], indent+"  ")
+        else:
+            str_param_value += str(value)
+        return str_param_value
+
+    def get_dict(self):
+        return {"Value": self.value, "Name": self.resolved,
+                "Namespace": self.namespace, "Minimal": self.minimal}
+
+    def dump_xtext_model(self, indent="", value=""):
+        str_param = "%sParameter { name '%s' type %s " % (
+            indent, self.resolved, self.itype)
+        if self.itype == 'Struct':
+            str_param += self.types_struct(self.value[0], indent)
+            #str_param = str_param[:-2]
+        if self.itype == 'List':
+            str_param += self.form_list(self.value)
+        str_param += "}"
+        return str_param
+
 class ComponentSet(set):
     def get_list(self):
         return [x.get_dict() for x in self]
@@ -118,3 +181,22 @@ class RosInterfaceSet(set):
         str_ += "}\n"
         return str_
 
+class RosParameterSet(set):
+    def get_list(self):
+        return [x.get_dict() for x in self]
+
+    def iteritems(self):
+        return [(x.resolved, x.itype) for x in self]
+
+    def iterkeys(self):
+        return [x.resolved for x in self]
+
+    def dump_xtext_model(self, indent="", value="", name_block=""):
+        if len(self) == 0:
+            return ""
+        str_ = ("\n%s%s {\n") % (indent, name_block)
+        for elem in self:
+            str_ += elem.dump_xtext_model(indent+"  ", value) + ",\n"
+        str_ = str_[:-2]
+        str_ += "}"
+        return str_
