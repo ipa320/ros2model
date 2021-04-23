@@ -73,22 +73,18 @@ class RosInterface(object):
         self.reference = reference
 
     def dump_xtext_model(self, indent, name_type, interface_type):
+        print(self.reference)
         return ("%s%s { name '%s' %s '%s'}") % (
             indent, name_type, self.resolved, interface_type, self.reference.replace("/", "."))
 
 class RosParameter(object):
-    def __init__(self, name, value, namespace=""):
+    def __init__(self, name, reference, value, namespace=""):
         self.resolved = name
         self.namespace = namespace
         self.minimal = name[len(self.namespace)-1:]
         self.value = value
+        self.reference = reference
         self.count = 0
-
-    def __eq__(self, other):
-        if self.value == other.value and self.resolved == other.resolved:
-            return True
-        else:
-            return False
 
     def get_type(self, value):
         itype = type(value)
@@ -110,33 +106,49 @@ class RosParameter(object):
             return itype
 
     def set_value(self, value, indent):
+        itype = self.get_type(value)
         str_param_value = ""
-        if self.itype == "String":
+        if itype == "String":
             str_param_value += "'"+self.value+"'"
-        elif self.itype == "Boolean":
+        elif itype == "Boolean":
             str_param_value += str(self.value).lower()
-        elif self.itype == "List":
+        elif itype == "List":
             str_param_value += str(self.value).replace(
                 "[", "{").replace("]", "}")
-        elif self.itype == 'Struct':
+        elif itype == 'Struct':
             str_param_value += self.value_struct(self.value[0], indent+"  ")
         else:
             str_param_value += str(value)
         return str_param_value
 
-    def get_dict(self):
-        return {"Value": self.value, "Name": self.resolved,
-                "Namespace": self.namespace, "Minimal": self.minimal}
-
-    def dump_xtext_model(self, indent="", value=""):
-        str_param = "%sParameter { name '%s' type %s " % (
-            indent, self.resolved, self.itype)
-        if self.itype == 'Struct':
-            str_param += self.types_struct(self.value[0], indent)
-            #str_param = str_param[:-2]
-        if self.itype == 'List':
-            str_param += self.form_list(self.value)
+    def value_struct(self, struct_dict, indent):
+        str_param = "{\n"
+        indent_new = indent+"    "
+        for struct_element in struct_dict:
+            sub_name = struct_element
+            sub_value = struct_dict[struct_element]
+            sub_type = self.get_type(sub_value)
+            str_param += "%s{ '%s' { value " % (indent_new, sub_name)
+            if sub_type == "String":
+                sub_value = "'"+sub_value+"'"
+            if sub_type == 'List':
+                sub_value = str(sub_value).replace(
+                    "[", "{").replace("]", "}").replace("{{", "{").replace("}}", "}")
+            if sub_type == "Boolean":
+                sub_value = str(sub_value).lower()
+            if isinstance(sub_value, dict):
+                str_param += self.value_struct(
+                    struct_dict[struct_element], indent_new)
+                self.count = self.count + 1
+            else:
+                str_param += "%s}}" % (sub_value)
+            str_param += ",\n"
+        str_param = str_param[:-2]
         str_param += "}"
+        if self.count == 1:
+            str_param += "}}"
+            self.count = self.count - 1
+        indent_new = ""
         return str_param
 
 class ComponentSet(set):
@@ -186,17 +198,20 @@ class RosParameterSet(set):
         return [x.get_dict() for x in self]
 
     def iteritems(self):
-        return [(x.resolved, x.itype) for x in self]
+        return [(x.resolved, x.reference) for x in self]
 
     def iterkeys(self):
         return [x.resolved for x in self]
 
-    def dump_xtext_model(self, indent="", value="", name_block=""):
+    def dump_xtext_model(self, indent="", name_type="", name_type2="", node_name="", pkg_name="", name_type3=""):
         if len(self) == 0:
             return ""
-        str_ = ("\n%s%s {\n") % (indent, name_block)
+        if not name_type3:
+            name_type3 = name_type2
+        str_ = ("%sRos%s {\n") % (indent, name_type)
         for elem in self:
-            str_ += elem.dump_xtext_model(indent+"  ", value) + ",\n"
+            str_ += ("%s    Ros%s '%s' {Ref%s '%s.%s.%s.%s' value %s},\n") % (
+                indent, name_type3, elem.resolved, name_type2, pkg_name, node_name, node_name, elem.resolved, elem.set_value(elem.value, indent))
         str_ = str_[:-2]
-        str_ += "}"
+        str_ += "}\n"
         return str_
