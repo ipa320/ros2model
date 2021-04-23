@@ -33,25 +33,25 @@ def rossystem_parser_test():
     for artifact in package.artifacts:
       node = artifact.node
 
-      print "Package name: %s" %package.name
-      print "Artifact name: %s" %artifact.name
-      print "Node name: %s" %node.name
+      print("Package name: {0}".format(package.name))
+      print ("Artifact name: {0}".format(artifact.name))
+      print ("Node name: {0}".format(node.name))
       if len(node.publishers) != 0:
-          print "Publishers: "
+          print("Publishers: ")
           for pub in node.publishers:
-              print"    Name: %s Type: %s" %(pub.name, pub.type)
+            print("    Name: {0} Type: {1}".format(pub.name, pub.type))
       if len(node.subscribers) != 0:
-          print "Subscribers: "
+          print("Subscribers: ")
           for sub in node.subscribers:
-              print"    Name: %s Type: %s" %(sub.name, sub.type)
+            print("    Name: {0} Type: {1}".format(sub.name, sub.type))
       if len(node.service_servers) != 0:
-          print "Service Servers: "
+          print("Service Servers: ")
           for svr in node.service_servers:
-              print"    Name: %s Type: %s" %(svr.name, svr.type)
+            print("    Name: {0} Type: {1}".format(svr.name, svr.type))
       if len(node.service_clients) != 0:
-          print "Service Clients: "
+          print("Service Clients: ")
           for svr in node.service_clients:
-              print"    Name: %s Type: %s" %(svr.name, svr.type)
+            print("    Name: {0} Type: {1}".format(svr.name, svr.type))
 
 if __name__ == '__main__':
     try:
