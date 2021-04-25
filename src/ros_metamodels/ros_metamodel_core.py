@@ -138,15 +138,9 @@ class Parameter(object):
         self.type = self.get_type(value)
         self.count = 0
 
-    def __eq__(self, other):
-        if self.value == other.value and self.fullname == other.fullname:
-            return True
-        else:
-            return False
-
     def get_type(self, value):
         param_type = type(value)
-        param_type = (str(type)).replace("<type '", "").replace("'>", "")
+        param_type = (str(param_type)).replace("<class '", "").replace("'>", "")
         if param_type == 'float':
             return 'Double'
         elif param_type == 'bool':
@@ -177,6 +171,66 @@ class Parameter(object):
         else:
             str_param_value += str(value)
         return str_param_value
+
+    def types_struct(self, struct_dict, indent):
+        str_param = "{\n"
+        indent_new = indent+"  "
+        for struct_element in struct_dict:
+            sub_name = struct_element
+            sub_value = struct_dict[struct_element]
+            sub_type = self.get_type(sub_value)
+            str_param += "%s'%s' %s" % (indent_new, sub_name, sub_type)
+            if sub_type == 'List':
+                str_param += self.form_list(sub_value)
+            if isinstance(sub_value, dict):
+                str_param += self.types_struct(
+                    struct_dict[struct_element], indent_new)
+            str_param += ",\n"
+        str_param = str_param[:-2]
+        str_param += "}"
+        indent_new = ""
+        return str_param
+
+    def value_struct(self, struct_dict, indent):
+        str_param = "{\n"
+        indent_new = indent+"    "
+        for struct_element in struct_dict:
+            sub_name = struct_element
+            sub_value = struct_dict[struct_element]
+            sub_type = self.get_type(sub_value)
+            str_param += "%s{ '%s' { value " % (indent_new, sub_name)
+            if sub_type == "String":
+                sub_value = "'"+sub_value+"'"
+            if sub_type == 'List':
+                sub_value = str(sub_value).replace(
+                    "[", "{").replace("]", "}").replace("{{", "{").replace("}}", "}")
+            if sub_type == "Boolean":
+                sub_value = str(sub_value).lower()
+            if isinstance(sub_value, dict):
+                str_param += self.value_struct(
+                    struct_dict[struct_element], indent_new)
+                self.count = self.count + 1
+            else:
+                str_param += "%s}}" % (sub_value)
+            str_param += ",\n"
+        str_param = str_param[:-2]
+        str_param += "}"
+        if self.count == 1:
+            str_param += "}}"
+            self.count = self.count - 1
+        indent_new = ""
+        return str_param
+
+    def form_list(self, value_in):
+        str_param = "{"
+        for i in value_in:
+            str_param += self.get_type(i)
+            if self.get_type(i) == "List":
+                str_param += self.form_list(i)
+            str_param += ","
+        str_param = str_param[:-1]
+        str_param += "}"
+        return str_param
 
     def get_dict(self):
         return {"Value": self.value, "Fullname": self.fullname,
