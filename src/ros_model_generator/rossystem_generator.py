@@ -27,7 +27,7 @@ class RosSystemModelGenerator(object):
     self.system.name = name;
 
   def addParameter(self, name, value):
-    self.system.params.add(model.Parameter(name, value, type(value)))
+    self.system.params.add(model.Parameter(name, type(value), value))
 
   def addComponent(self, name):
     self.system.components.add(system_model.Component(name))
@@ -93,8 +93,7 @@ class RosSystemModelGenerator(object):
       self.addComponent(component)
 
     if 'global_parameters' in components:
-      component = system_model.Component('global_parameters')
-      parameters = components['global_parameters']['parameters']
+      parameters = components['global_parameters']
       for name, param in parameters.items():
         self.addParameter(name, param[0])
 
@@ -110,7 +109,8 @@ if __name__ == "__main__":
                                             '/gazebo/set_model_state': 'gazebo_msgs/ModelState'},
                             'service_servers': {'/gazebo/spawn_sdf_model': 'gazebo_msgs/SpawnModel',
                                                 '/gazebo/spawn_urdf_model': 'gazebo_msgs/SpawnModel'}},
-              '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}}}
+              '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}},
+              'global_parameters' : {'/gazebo/link_states' : [20, 'int']}}
   try:
     # print(generator.dump_ros_system_model("/tmp/test").dump())
     print(generator.create_ros_system_model_list(components)[1])
