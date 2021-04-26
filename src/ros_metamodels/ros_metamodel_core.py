@@ -244,6 +244,8 @@ class Parameter(object):
             #str_param = str_param[:-2]
         if self.type == 'List':
             str_param += self.form_list(self.value)
+        if self.value:
+           str_param += ' value ' + self.set_value(self.value, indent)
         str_param += "}"
         return str_param
 
