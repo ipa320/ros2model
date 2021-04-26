@@ -31,7 +31,7 @@ class RosSystem(object):
         system_model_str += "}\n)"
         system_model_str += self.params.dump_xtext_model(
             "        ", "Parameters", "Parameters")
-        system_model_str += "}"
+        system_model_str += "\n}"
 
         return system_model_str
 
