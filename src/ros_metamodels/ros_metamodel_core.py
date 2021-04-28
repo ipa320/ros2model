@@ -56,7 +56,6 @@ class ArtifactSet(set):
         for elem in self:
             str_ += elem.dump_xtext_model() + ",\n"
         str_ = str_[:-2]
-        str_ += "}"
         return str_
 
 class Artifact(object):
@@ -96,8 +95,8 @@ class Node(object):
     def add_action_server(self, name, act_type):
       self.action_clients.add(Interface(name, act_type))
 
-    def add_parameter(self, name, type, value=None):
-      self.params.add(Parameter(name, type, value))
+    def add_parameter(self, name, value, type, default):
+      self.params.add(Parameter(name, value, type, default))
 
     def dump_xtext_model(self):
         ros_model_str = "      Node { name " + self.name
@@ -130,17 +129,28 @@ class Interface(object):
             indent, name_type, self.fullname, interface_type, self.type.replace("/", "."))
 
 class Parameter(object):
-    def __init__(self, name, type, value, namespace=""):
+    def __init__(self, name, value=None, type=None, default=None, namespace=""):
         self.fullname = name
         self.namespace = namespace
         self.name = name[len(self.namespace)-1:]
         self.value = value
-        self.type = self.get_type(value)
+        self.default = default
+        self.type = self.get_type(value, default, type)
         self.count = 0
 
-    def get_type(self, value):
+    def get_type(self, value, default, given_type):
+        if given_type != None:
+          return given_type
+        elif value!=None:
+          return self.get_type_from_value(value)
+        elif default!=None:
+          return self.get_type_from_value(default)
+        else:
+          return ''
+
+    def get_type_from_value(self, value):
         param_type = type(value)
-        param_type = (str(param_type)).replace("<class '", "").replace("'>", "")
+        param_type = (str(param_type)).replace("<type '", "").replace("'>", "")
         if param_type == 'float':
             return 'Double'
         elif param_type == 'bool':
@@ -244,8 +254,10 @@ class Parameter(object):
             #str_param = str_param[:-2]
         if self.type == 'List':
             str_param += self.form_list(self.value)
+        if self.default:
+           str_param += '{default ' + self.set_value(self.default, indent)+"}"
         if self.value:
-           str_param += ' value ' + self.set_value(self.value, indent)
+           str_param += 'value ' + self.set_value(self.value, indent)
         str_param += "}"
         return str_param
 
