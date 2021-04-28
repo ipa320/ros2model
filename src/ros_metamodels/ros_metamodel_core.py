@@ -161,7 +161,7 @@ class Parameter(object):
             return 'String'
         elif param_type == 'list' or param_type == 'dict':
             if ":" in str(value):
-                return 'Struct'
+                return 'Struc'
             else:
                 return 'List'
         else:
@@ -176,7 +176,7 @@ class Parameter(object):
         elif self.type == "List":
             str_param_value += str(self.value).replace(
                 "[", "{").replace("]", "}")
-        elif self.type == 'Struct':
+        elif self.type == 'Struc':
             str_param_value += self.value_struct(self.value[0], indent+"  ")
         else:
             str_param_value += str(value)

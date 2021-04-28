@@ -99,7 +99,7 @@ class RosParameter(object):
             return 'String'
         elif itype == 'list' or itype == 'dict':
             if ":" in str(value):
-                return 'Struct'
+                return 'Struc'
             else:
                 return 'List'
         else:
@@ -115,7 +115,7 @@ class RosParameter(object):
         elif itype == "List":
             str_param_value += str(self.value).replace(
                 "[", "{").replace("]", "}")
-        elif itype == 'Struct':
+        elif itype == 'Struc':
             str_param_value += self.value_struct(self.value[0], indent+"  ")
         else:
             str_param_value += str(value)
