@@ -30,7 +30,10 @@ def ros_system_model_generator_test():
     file_path=rospack.get_path("ros_model_parser")+'/resources/rosparam_example.yaml'
     for key, value in yaml.safe_load(open(os.path.join(file_path))).iteritems():
         ros_system_model.addParameter(key,value)
-    ros_system_model.dump_java_ros_system_model("/tmp/test.rossystem")
+
+    ros_system_model.create_ros_system_model()
+
+    ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
 
 if __name__ == '__main__':
     try:

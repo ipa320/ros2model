@@ -27,40 +27,31 @@ def rossystem_parser_test():
     model_path = os.path.join(rp.get_path("ros_model_parser"),"resources/cob_light.ros")
     rossystem_parser = RosModelParser(model_path, isFile=True)
 
-    #rossystem_parser = RosModelParser("\
-    #PackageSet { package { \
-    #    CatkinPackage cob_light { artifact { \
-    #        Artifact cob_light { \
-    #            node Node { name cob_light_node"
-    #,isFile=False)
-
     static_model = rossystem_parser.parse()
 
-    package_name= static_model.get("pkg_name")
-    node_name = static_model.get("node_name")
-    publishers = static_model.get("publishers")
-    subscribers = static_model.get("subscribers")
-    svr_servers = static_model.get("svr_servers")
-    svr_clients = static_model.get("svr_clients")
+    package = static_model.packages[0]
+    for artifact in package.artifacts:
+      node = artifact.node
 
-    print "Package name: %s" %package_name
-    print "Node name: %s" %node_name
-    if publishers is not None:
-        print "Publishers: "
-        for pub in publishers:
-            print"    Name: %s Type: %s" %(pub.get("name"), pub.get("type"))
-    if subscribers is not None:
-        print "Subscribers: "
-        for sub in subscribers:
-            print"    Name: %s Type: %s" %(sub.get("name"), sub.get("type"))
-    if svr_servers is not None:
-        print "Service Servers: "
-        for svr in svr_servers:
-            print"    Name: %s Type: %s" %(svr.get("name"), svr.get("type"))
-    if svr_clients is not None:
-        print "Service Clients: "
-        for svr in svr_clients:
-            print"    Name: %s Type: %s" %(svr.get("name"), svr.get("type"))
+      print("Package name: {0}".format(package.name))
+      print ("Artifact name: {0}".format(artifact.name))
+      print ("Node name: {0}".format(node.name))
+      if len(node.publishers) != 0:
+          print("Publishers: ")
+          for pub in node.publishers:
+            print("    Name: {0} Type: {1}".format(pub.name, pub.type))
+      if len(node.subscribers) != 0:
+          print("Subscribers: ")
+          for sub in node.subscribers:
+            print("    Name: {0} Type: {1}".format(sub.name, sub.type))
+      if len(node.service_servers) != 0:
+          print("Service Servers: ")
+          for svr in node.service_servers:
+            print("    Name: {0} Type: {1}".format(svr.name, svr.type))
+      if len(node.service_clients) != 0:
+          print("Service Clients: ")
+          for svr in node.service_clients:
+            print("    Name: {0} Type: {1}".format(svr.name, svr.type))
 
 if __name__ == '__main__':
     try:
