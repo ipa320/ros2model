@@ -27,7 +27,7 @@ def ros_model_generator_test():
     ros_model = RosModelGenerator()
     node = Node("test_node")
     node.add_publisher("my_pub","std_msgs/Bool")
-    node.add_parameter("myIntParam",25)
+    node.add_parameter("myIntParam", None, None, 25)
     ros_model.create_model_from_node('my_ros_pkg',"test",node)
 
     ros_model.generate_ros_model('/tmp/test.ros')

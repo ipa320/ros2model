@@ -27,7 +27,7 @@ class RosSystemModelGenerator(object):
     self.system.name = name;
 
   def addParameter(self, name, value):
-    self.system.params.add(model.Parameter(name, type(value), value))
+    self.system.params.add(model.Parameter(name, value))
 
   def addComponent(self, name):
     self.system.components.add(system_model.Component(name))
@@ -98,6 +98,11 @@ class RosSystemModelGenerator(object):
         self.addParameter(name, param[0])
 
     return self.create_ros_system_model()
+
+  def generate_ros_system_model(self, ros_system_model_file):
+    sucess, ros_system_model_str = self.create_ros_system_model()
+    with open(ros_system_model_file, 'w') as outfile:
+      outfile.write(ros_system_model_str)
 
 
 if __name__ == "__main__":

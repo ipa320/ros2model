@@ -27,7 +27,9 @@ def ros_system_model_generator_test():
     ros_system_model.addParameter("mystring","test")
     ros_system_model.addParameter("myIntParam",25)
 
-    print(ros_system_model.create_ros_system_model())
+    ros_system_model.create_ros_system_model()
+
+    ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
 
 if __name__ == '__main__':
     try:
