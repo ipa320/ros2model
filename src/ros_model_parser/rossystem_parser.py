@@ -54,7 +54,7 @@ class RosSystemModelParser(object):
         name = Optional(SQ) + Optional(DQ) + Word(printables,
                                    excludeChars="{},'") + Optional(SQ) + Optional(DQ)
 
-        real = Combine(Word(nums) + '.' + Word(nums))
+        real = pyparsing_common.number.copy()
 
         listStr = Forward()
         mapStr = Forward()
