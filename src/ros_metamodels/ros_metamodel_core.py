@@ -103,7 +103,7 @@ class Node(object):
         ros_model_str += self.service_servers.dump_xtext_model(
             "        ", "ServiceServer", "service", "ServiceServers")
         ros_model_str += self.service_clients.dump_xtext_model(
-            "        ", "ServiceClients", "service", "ServiceClients")
+            "        ", "ServiceClient", "service", "ServiceClients")
         ros_model_str += self.publishers.dump_xtext_model(
             "        ", "Publisher", "message", "Publishers")
         ros_model_str += self.subscribers.dump_xtext_model(
