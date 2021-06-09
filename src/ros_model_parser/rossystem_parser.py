@@ -36,9 +36,32 @@ def parseActionDict(string, location, tokens):
         dict_list.append(param_dict)
     return dict_list
 
+def parseStructType(name, tokens):
+    result = ParseResults(name)
+    i = 0
+    struct_dict = ParseResults('Struct')
+    while i < len(tokens):
+        if tokens[i+1] != 'Struct':
+            struct_pair = ParseResults([tokens[i], str(tokens[i+1])])
+            struct_dict.append(struct_pair)
+            i += 2
+        else:
+            struct_res = parseStructType(tokens[i], tokens[i+2])
+            struct_dict.append(struct_res)
+            i += 3
+    result.append(struct_dict)
+    return result
+
+def parseActionParamType(string, location, tokens):
+    for tok in tokens:
+        if tok == 'Struct':
+            struct_dict = parseStructType("", tokens[1])
+            struct_dict.pop(0)
+            return struct_dict
 
 class RosSystemModelParser(object):
     def __init__(self, model, isFile=True):
+
         # OCB = Open Curly Bracket {
         # CCB = Close Curly Bracket }
         # ORB = Open Round Bracket (
@@ -141,6 +164,7 @@ class RosSystemModelParser(object):
 
         structType << Group(OCB + structPair + CCB)
         param_type << _type + (name + Optional(listType | structType))
+        param_type.setParseAction(parseActionParamType)
 
         parameter = Group(_parameter + name("param_name") +
                           OCB + _ref_parameter + name("param_path") + Optional(param_value("param_value")) + CCB)
