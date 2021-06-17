@@ -28,7 +28,7 @@ class RosSystem(object):
         system_model_str += "    RosComponents ( \n"
         system_model_str += self.components.dump_xtext_model()
         system_model_str = system_model_str[:-2]
-        system_model_str += ")"
+        system_model_str += "}\n)"
         system_model_str += self.params.dump_xtext_model(
             "        ", "Parameters", "Parameters")
         system_model_str += "\n}"
