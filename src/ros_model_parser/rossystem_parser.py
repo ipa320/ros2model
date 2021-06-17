@@ -66,7 +66,7 @@ class RosSystemModelParser(object):
 
         string_value.setParseAction(parseActionStr)
         values = (Combine(Optional("-") + real) | Combine(Optional("-") + Word(nums))).setParseAction(
-            lambda tokens: float(tokens[0])) | string_value | Keyword("false") | Keyword("true") | listStr | mapStr
+            lambda tokens: float(tokens[0])) | string_value | Word(alphanums + "/-_.") | Keyword("false") | Keyword("true") | listStr | mapStr
 
         _system = Keyword("RosSystem").suppress()
         _name = CaselessKeyword("name").suppress()
