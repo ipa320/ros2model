@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import imp
 
 from ros_model_generator.rossystem_generator import RosSystemModelGenerator
 
@@ -31,8 +30,24 @@ def ros_system_model_generator_test():
 
     ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
 
+def ros_system_model_generator_list_test():
+    generator = RosSystemModelGenerator()
+    components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [20, 'int']},
+                              'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
+                                             '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
+                              'subscribers': {'/gazebo/set_link_state': 'gazebo_msgs/LinkState',
+                                              '/gazebo/set_model_state': 'gazebo_msgs/ModelState'},
+                              'service_servers': {'/gazebo/spawn_sdf_model': 'gazebo_msgs/SpawnModel',
+                                                  '/gazebo/spawn_urdf_model': 'gazebo_msgs/SpawnModel'}},
+                 '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}},
+                                'global_parameters' : {'/gazebo/link_states' : [20, 'int']}}
+
+    generator.generate_ros_system_model_list(components, '/tmp/test_list.rossystem')
+
+
 if __name__ == '__main__':
     try:
         ros_system_model_generator_test()
+        ros_system_model_generator_list_test()
     except rospy.ROSInterruptException:
         pass

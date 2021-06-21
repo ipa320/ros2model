@@ -104,21 +104,16 @@ class RosSystemModelGenerator(object):
     with open(ros_system_model_file, 'w') as outfile:
       outfile.write(ros_system_model_str)
 
+  def generate_ros_system_model_list(self, components, ros_system_model_file):
+    sucess, ros_system_model_str = self.create_ros_system_model_list(components)
+    with open(ros_system_model_file, 'w') as outfile:
+      outfile.write(ros_system_model_str)
+
 
 if __name__ == "__main__":
   generator = RosSystemModelGenerator()
-  components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [20, 'int']},
-                            'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
-                                           '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
-                            'subscribers': {'/gazebo/set_link_state': 'gazebo_msgs/LinkState',
-                                            '/gazebo/set_model_state': 'gazebo_msgs/ModelState'},
-                            'service_servers': {'/gazebo/spawn_sdf_model': 'gazebo_msgs/SpawnModel',
-                                                '/gazebo/spawn_urdf_model': 'gazebo_msgs/SpawnModel'}},
-              '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}},
-              'global_parameters' : {'/gazebo/link_states' : [20, 'int']}}
   try:
-    # print(generator.dump_ros_system_model("/tmp/test").dump())
-    print(generator.create_ros_system_model_list(components)[1])
+    print(generator.dump_ros_system_model("/tmp/test").dump())
   except Exception as e:
     print(e.args)
 
