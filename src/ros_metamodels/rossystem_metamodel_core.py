@@ -28,7 +28,7 @@ class RosSystem(object):
         system_model_str += "    RosComponents ( \n"
         system_model_str += self.components.dump_xtext_model()
         system_model_str = system_model_str[:-2]
-        system_model_str += ")"
+        system_model_str += "}\n)"
         system_model_str += self.params.dump_xtext_model(
             "        ", "Parameters", "Parameters")
         system_model_str += "\n}"
@@ -50,6 +50,8 @@ class Component(object):
     def dump_xtext_model(self, package=""):
         system_model_str = "        ComponentInterface { name '" + \
             self.name+"'\n"
+        system_model_str += self.params.dump_xtext_model(
+            "            ", "Parameters", "Parameter", self.name, package)
         system_model_str += self.publishers.dump_xtext_model(
             "            ", "Publishers", "Publisher", self.name, package)
         system_model_str += self.subscribers.dump_xtext_model(
@@ -60,8 +62,6 @@ class Component(object):
             "            ", "ActionServers", "Server", self.name, package)
         system_model_str += self.action_clients.dump_xtext_model(
             "            ", "ActionClients", "Client", self.name, package)
-        system_model_str += self.params.dump_xtext_model(
-            "            ", "Parameters", "Parameter", self.name, package)
         system_model_str += "        },\n"
         return system_model_str
 
