@@ -104,6 +104,11 @@ class RosSystemModelGenerator(object):
     with open(ros_system_model_file, 'w') as outfile:
       outfile.write(ros_system_model_str)
 
+  def generate_ros_system_model_list(self, components, ros_system_model_file):
+    sucess, ros_system_model_str = self.create_ros_system_model_list(components)
+    with open(ros_system_model_file, 'w') as outfile:
+      outfile.write(ros_system_model_str)
+
 
 if __name__ == "__main__":
   generator = RosSystemModelGenerator()
