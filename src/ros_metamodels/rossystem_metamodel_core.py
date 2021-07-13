@@ -18,15 +18,16 @@ from ros_metamodels.ros_metamodel_core import ParameterSet, Parameter
 
 ## ROS SYSTEM METAMODEL ##
 class RosSystem(object):
-    def __init__(self, name):
+    def __init__(self, name, package):
         self.name = name
+        self.package = package
         self.components = ComponentSet()
         self.params = ParameterSet()
 
     def dump_xtext_model(self):
         system_model_str = "RosSystem { Name '%s'\n" % self.name
         system_model_str += "    RosComponents ( \n"
-        system_model_str += self.components.dump_xtext_model()
+        system_model_str += self.components.dump_xtext_model(self.package)
         system_model_str = system_model_str[:-2]
         system_model_str += "}\n)"
         system_model_str += self.params.dump_xtext_model(
@@ -73,7 +74,6 @@ class RosInterface(object):
         self.reference = reference
 
     def dump_xtext_model(self, indent, name_type, interface_type):
-        print(self.reference)
         return ("%s%s { name '%s' %s '%s'}") % (
             indent, name_type, self.resolved, interface_type, self.reference.replace("/", "."))
 
@@ -161,12 +161,12 @@ class ComponentSet(set):
     def iterkeys(self):
         return [x.resolved for x in self]
 
-    def dump_xtext_model(self, indent="", value="", name_block=""):
+    def dump_xtext_model(self, package="", indent="", value="", name_block=""):
         if len(self) == 0:
             return ""
         str_ = ("\n%s%s") % (indent, name_block)
         for elem in self:
-            str_ += elem.dump_xtext_model() + "\n"
+            str_ += elem.dump_xtext_model(package) + "\n"
         str_ = str_[:-2]
         return str_
 

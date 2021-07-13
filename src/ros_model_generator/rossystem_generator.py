@@ -20,8 +20,8 @@ import ros_metamodels.ros_metamodel_core as model
 import ros_metamodels.rossystem_metamodel_core as system_model
 
 class RosSystemModelGenerator(object):
-  def __init__(self,name=""):
-    self.system = system_model.RosSystem(name);
+  def __init__(self,name="", package=""):
+    self.system = system_model.RosSystem(name, package);
 
   def setSystemName(self, name):
     self.system.name = name;

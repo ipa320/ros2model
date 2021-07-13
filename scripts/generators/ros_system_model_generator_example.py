@@ -31,7 +31,7 @@ def ros_system_model_generator_test():
     ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
 
 def ros_system_model_generator_list_test():
-    generator = RosSystemModelGenerator()
+    generator = RosSystemModelGenerator('demo', 'my_ros_package')
     components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [20, 'int']},
                               'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
                                              '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
