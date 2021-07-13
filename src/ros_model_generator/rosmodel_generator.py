@@ -17,6 +17,7 @@
 import pprint
 from pyparsing import *
 import ros_metamodels.ros_metamodel_core as model
+import ros_metamodels.rossystem_metamodel_core as system_model
 
 class RosModelGenerator(object):
   def __init__(self):
@@ -38,9 +39,46 @@ class RosModelGenerator(object):
     with open(ros_model_file, 'w') as outfile:
       outfile.write(ros_model_str)
 
+  def generate_ros_model_from_system(self, rossystem, package, ros_model_file):
+    sucess, ros_model_str = self.create_ros_model_from_system(package, rossystem)
+    with open(ros_model_file, 'w') as outfile:
+      outfile.write(ros_model_str)
+
   def create_ros_model(self):
     ros_model_str = self.ros_model.dump_xtext_model()
     return True, ros_model_str
+
+  def create_ros_model_from_system(self, package_name, rossystem):
+    package = model.Package(package_name)
+    for component in rossystem.components:
+        node = model.Node(component.name)
+
+        # for param_name, param in component.params.iteritems():
+          # node.add_parameter(param_name, None, None, param[0])
+
+        for pub, pub_type in component.publishers.iteritems():
+          node.add_publisher(pub, pub_type)
+
+        for sub, sub_type in component.subscribers.iteritems():
+          node.add_subscriber(sub, sub_type)
+
+        for serv, serv_type in component.service_servers.iteritems():
+          node.add_service_server(serv, serv_type)
+
+        for serv, serv_type in component.service_clients.iteritems():
+          node.add_service_client(serv, serv_type)
+
+        for action, action_type in component.action_clients.iteritems():
+          node.add_action_client(action, action_type)
+
+        for action, action_type in component.action_servers.iteritems():
+          node.add_action_server(action, action_type)
+
+        artifact = model.Artifact(node.name, node)
+        package.add_artifact(artifact)
+
+    self.ros_model.add_package(package)
+    return self.create_ros_model()
 
   def create_ros_model_list(self, components):
     for name in components:
@@ -91,6 +129,6 @@ class RosModelGenerator(object):
 if __name__ == "__main__":
   generator = RosModelGenerator()
   try:
-    print(generator.generate_ros_model("/tmp/test").dump())
+    generator.generate_ros_model("/tmp/test")
   except Exception as e:
     print(e.args)

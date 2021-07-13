@@ -18,6 +18,8 @@ import pprint
 from pyparsing import *
 import ros_metamodels.ros_metamodel_core as model
 import ros_metamodels.rossystem_metamodel_core as system_model
+import ros_model_generator.rosmodel_generator as model_generator
+
 
 class RosSystemModelGenerator(object):
   def __init__(self,name="", package=""):
@@ -104,16 +106,20 @@ class RosSystemModelGenerator(object):
     with open(ros_system_model_file, 'w') as outfile:
       outfile.write(ros_system_model_str)
 
-  def generate_ros_system_model_list(self, components, ros_system_model_file):
+  def generate_ros_system_model_list(self, components, ros_system_model_file, ros_model_file=""):
     sucess, ros_system_model_str = self.create_ros_system_model_list(components)
     with open(ros_system_model_file, 'w') as outfile:
       outfile.write(ros_system_model_str)
+
+      if ros_model_file:
+        rosmodel_generator = model_generator.RosModelGenerator()
+        rosmodel_generator.generate_ros_model_from_system(self.system, self.system.package, ros_model_file)
 
 
 if __name__ == "__main__":
   generator = RosSystemModelGenerator()
   try:
-    print(generator.dump_ros_system_model("/tmp/test").dump())
+    generator.dump_ros_system_model("/tmp/test")
   except Exception as e:
     print(e.args)
 
