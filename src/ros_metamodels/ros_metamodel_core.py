@@ -138,7 +138,7 @@ class Parameter(object):
         self.type = self.get_type(value, default, type)
         self.count = 0
 
-    def get_type(self, value, default, given_type):
+    def get_type(self, value, default=None, given_type=None):
         if given_type != None:
           return given_type
         elif value!=None:
