@@ -14,12 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from distutils.core import setup
-from catkin_pkg.python_setup import generate_distutils_setup
 
-d = generate_distutils_setup(
-   packages=['ros_model_parser','ros_model_generator','ros_metamodels'],
-   package_dir={'': 'src'}
+from setuptools import setup
+
+package_name = 'ros_model_parser'
+
+setup(
+    name=package_name,
+    version='0.0.1',
+    packages=[package_name],
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='ipa-nhg',
+    maintainer_email='nadia.hammoudeh.garcia@ipa.fraunhofer.de',
+    description='Parser for the ros-model DLSs',
+    license='Apache 2.0',
+    tests_require=['pytest'],
 )
-
-setup(**d)

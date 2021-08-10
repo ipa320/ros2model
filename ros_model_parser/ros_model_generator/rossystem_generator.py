@@ -16,9 +16,9 @@
 
 import pprint
 from pyparsing import *
-import ros_metamodels.ros_metamodel_core as model
-import ros_metamodels.rossystem_metamodel_core as system_model
-import ros_model_generator.rosmodel_generator as model_generator
+import ros_model_parser.ros_metamodels.ros_metamodel_core as model
+import ros_model_parser.ros_metamodels.rossystem_metamodel_core as system_model
+import ros_model_parser.ros_model_generator.rosmodel_generator as model_generator
 
 
 class RosSystemModelGenerator(object):

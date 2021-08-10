@@ -16,7 +16,7 @@
 
 import pprint
 from pyparsing import *
-import ros_metamodels.ros_metamodel_core as rosmodel
+import ros_model_parser.ros_metamodels.ros_metamodel_core as rosmodel
 
 # TODO: extract nodes, topics, services, etc from 'result'
 # Compute Connections

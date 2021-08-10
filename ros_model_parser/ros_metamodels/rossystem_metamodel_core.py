@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ros_metamodels.ros_metamodel_core import ParameterSet, Parameter
+from ros_model_parser.ros_metamodels.ros_metamodel_core import ParameterSet, Parameter
 
 ## ROS SYSTEM METAMODEL ##
 class RosSystem(object):
