@@ -63,6 +63,6 @@ def ros_parser_test():
 
 if __name__ == '__main__':
     try:
-        rossystem_parser_test()
+        ros_parser_test()
     except rospy.ROSInterruptException:
         pass

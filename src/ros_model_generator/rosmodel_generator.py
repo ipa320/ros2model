@@ -17,16 +17,17 @@
 import pprint
 from pyparsing import *
 import ros_metamodels.ros_metamodel_core as model
-import ros_metamodels.rossystem_metamodel_core as system_model
 
 class RosModelGenerator(object):
   def __init__(self):
     self.ros_model = model.RosModel()
 
-  def create_model_from_node(self, package_name, artifact_name, node, pkg_type="CatkinPackage"):
-      package = model.Package(package_name,pkg_type)
+  def create_model_from_node(self, package_name, artifact_name, node, repo=None, pkg_type="CatkinPackage"):
+      package = model.Package(package_name, repo, pkg_type)
+      gitrepo=model.GitRepo(repo)
       artifact = model.Artifact(artifact_name, node)
       package.add_artifact(artifact)
+      package.add_repo(gitrepo)
       self.ros_model.add_package(package)
 
   def generate_ros_model(self, ros_model_file):

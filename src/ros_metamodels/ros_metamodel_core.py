@@ -32,9 +32,10 @@ class RosModel(object):
         return ros_model_str
 
 class Package(object):
-    def __init__(self, name,pkg_type="CatkinPackage"):
+    def __init__(self, name, repo=None, pkg_type="CatkinPackage"):
         self.name = name
         self.artifacts=ArtifactSet()
+        self.repo = GitRepo(repo)
         if pkg_type not in ["CatkinPackage","AmentPackage","Package"]:
           print("\n ERROR: Invalid package type given, supported types are CatkinPackage(for ROS1), AmentPackage(for ROS2) or Package(for non-ROS packages)\n")
           return
@@ -44,8 +45,12 @@ class Package(object):
     def add_artifact(self, artifact):
         self.artifacts.add(artifact)
 
+    def add_repo(self, repo):
+        self.repo = repo
+
     def dump_xtext_model(self):
         ros_model_str = "  "+self.pkg_type+" "+self.name+" {\n"
+        ros_model_str += self.repo.dump_xtext_model()        
         ros_model_str += self.artifacts.dump_xtext_model()
         ros_model_str += "}"
         return ros_model_str
@@ -73,6 +78,17 @@ class Artifact(object):
         ros_model_str += self.node.dump_xtext_model()
         ros_model_str += "}"
         return ros_model_str
+
+class GitRepo(object):
+    def __init__(self, repo):
+        self.repo=repo
+
+    def dump_xtext_model(self):
+        if (self.repo != None):
+          ros_model_str = '    FromGitRepo "'+self.repo+'" \n'
+          return ros_model_str
+        else:
+          return ""
 
 class Node(object):
     def __init__(self, name):
@@ -156,7 +172,7 @@ class Parameter(object):
 
     def get_type_from_value(self, value):
         param_type = type(value)
-        param_type = (str(param_type)).replace("<type '", "").replace("<class '", "").replace("'>", "")
+        param_type = (str(param_type)).replace("<type '", "").replace("<class  '", "").replace("'>", "")
         if param_type == 'float':
             return 'Double'
         elif param_type == 'bool':
