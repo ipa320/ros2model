@@ -22,10 +22,12 @@ class RosModelGenerator(object):
   def __init__(self):
     self.ros_model = model.RosModel()
 
-  def create_model_from_node(self, package_name, artifact_name, node):
+  def create_model_from_node(self, package_name, artifact_name, node, repo=None):
       package = model.Package(package_name)
+      gitrepo=model.GitRepo(repo)
       artifact = model.Artifact(artifact_name, node)
       package.add_artifact(artifact)
+      package.add_repo(gitrepo)
       self.ros_model.add_package(package)
 
   def generate_ros_model(self, ros_model_file):
