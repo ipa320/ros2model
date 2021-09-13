@@ -261,7 +261,7 @@ class Parameter(object):
         if self.default and self.print_value:
            str_param += ' default ' + self.set_value(self.default, indent)
         if self.value and self.print_value:
-           str_param += ' value ' + self.set_value(self.value, indent)
+           str_param += 'value ' + self.set_value(self.value, indent)
         str_param += "}"
         return str_param
 
