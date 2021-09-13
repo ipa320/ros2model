@@ -95,8 +95,8 @@ class Node(object):
     def add_action_server(self, name, act_type):
       self.action_clients.add(Interface(name, act_type))
 
-    def add_parameter(self, name, value, type, default):
-      self.params.add(Parameter(name, value, type, default))
+    def add_parameter(self, name, value, type, default, set_value=True):
+      self.params.add(Parameter(name, value, type, default, print_value=set_value))
 
     def dump_xtext_model(self):
         ros_model_str = "      Node { name " + self.name
@@ -129,7 +129,7 @@ class Interface(object):
             indent, name_type, self.fullname, interface_type, self.type.replace("/", "."))
 
 class Parameter(object):
-    def __init__(self, name, value=None, type=None, default=None, namespace=""):
+    def __init__(self, name, value=None, type=None, default=None, namespace="", print_value=True):
         self.fullname = name
         self.namespace = namespace
         self.name = name[len(self.namespace)-1:]
@@ -137,6 +137,7 @@ class Parameter(object):
         self.default = default
         self.type = self.get_type(value, default, type)
         self.count = 0
+        self.print_value = print_value
 
     def get_type(self, value, default=None, given_type=None):
         if given_type != None:
@@ -170,14 +171,14 @@ class Parameter(object):
     def set_value(self, value, indent):
         str_param_value = ""
         if self.type == "String":
-            str_param_value += "'"+self.value+"'"
+            str_param_value += "'"+value+"'"
         elif self.type == "Boolean":
-            str_param_value += str(self.value).lower()
+            str_param_value += str(value).lower()
         elif self.type == "List":
-            str_param_value += str(self.value).replace(
+            str_param_value += str(value).replace(
                 "[", "{").replace("]", "}")
         elif self.type == 'Struc':
-            str_param_value += self.value_struct(self.value[0], indent+"  ")
+            str_param_value += self.value_struct(value[0], indent+"  ")
         else:
             str_param_value += str(value)
         return str_param_value
@@ -253,11 +254,14 @@ class Parameter(object):
             str_param += self.types_struct(self.value[0], indent)
             #str_param = str_param[:-2]
         if self.type == 'List':
-            str_param += self.form_list(self.value)
-        if self.default:
-           str_param += '{default ' + self.set_value(self.default, indent)+"}"
-        if self.value:
-           str_param += 'value ' + self.set_value(self.value, indent)
+            if self.value:
+                str_param += self.form_list(self.value)
+            elif self.default:
+                str_param += self.form_list(self.default)
+        if self.default and self.print_value:
+           str_param += ' default ' + self.set_value(self.default, indent)
+        if self.value and self.print_value:
+           str_param += ' value ' + self.set_value(self.value, indent)
         str_param += "}"
         return str_param
 

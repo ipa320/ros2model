@@ -39,8 +39,8 @@ class RosModelGenerator(object):
     with open(ros_model_file, 'w') as outfile:
       outfile.write(ros_model_str)
 
-  def generate_ros_model_from_system(self, rossystem, package, ros_model_file):
-    sucess, ros_model_str = self.create_ros_model_from_system(package, rossystem)
+  def generate_ros_model_from_system(self, rossystem, package, ros_model_file, print_param_value=True):
+    sucess, ros_model_str = self.create_ros_model_from_system(package, rossystem, print_param_value)
     with open(ros_model_file, 'w') as outfile:
       outfile.write(ros_model_str)
 
@@ -48,13 +48,13 @@ class RosModelGenerator(object):
     ros_model_str = self.ros_model.dump_xtext_model()
     return True, ros_model_str
 
-  def create_ros_model_from_system(self, package_name, rossystem):
+  def create_ros_model_from_system(self, package_name, rossystem, print_param_value=True):
     package = model.Package(package_name)
     for component in rossystem.components:
         node = model.Node(component.name)
 
-        # for param_name, param in component.params.iteritems():
-          # node.add_parameter(param_name, None, None, param[0])
+        for param in component.params:
+          node.add_parameter(param.resolved, None, None, param.value, print_param_value)
 
         for pub, pub_type in component.publishers.iteritems():
           node.add_publisher(pub, pub_type)
