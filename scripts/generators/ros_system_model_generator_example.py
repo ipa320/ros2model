@@ -31,7 +31,7 @@ def ros_system_model_generator_test():
     ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
 
 def ros_system_model_generator_list_test():
-    generator = RosSystemModelGenerator()
+    generator = RosSystemModelGenerator('demo', 'my_ros_package')
     components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [20, 'int']},
                               'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
                                              '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
@@ -42,7 +42,7 @@ def ros_system_model_generator_list_test():
                  '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}},
                                 'global_parameters' : {'/gazebo/link_states' : [20, 'int']}}
 
-    generator.generate_ros_system_model_list(components, '/tmp/test_list.rossystem')
+    generator.generate_ros_system_model_list(components, '/tmp/test_list.rossystem', '/tmp/test_list.ros')
 
 
 if __name__ == '__main__':
