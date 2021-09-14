@@ -52,6 +52,14 @@ def rossystem_parser_test():
           print("Service Clients: ")
           for svr in node.service_clients:
             print("    Name: {0} Type: {1}".format(svr.name, svr.type))
+      if len(node.action_servers) != 0:
+          print("Action Servers: ")
+          for act in node.action_servers:
+            print("    Name: {0} Type: {1}".format(act.name, act.type))
+      if len(node.action_clients) != 0:
+          print("Action Clients: ")
+          for act in node.action_clients:
+            print("    Name: {0} Type: {1}".format(act.name, act.type))
 
 if __name__ == '__main__':
     try:
