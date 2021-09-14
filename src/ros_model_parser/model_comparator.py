@@ -54,3 +54,15 @@ def compare_rossystem_models(model_ref, model_current):
 
     # returning missing_interfaces, additional_interfaces
     return list(set_ref - set_current), list(set_current - set_ref), incorrect_params
+
+def compare_ros_models(model_ref, model_current):
+    node_ref = list(model_ref.packages[0].artifacts)[0].node
+    node_current = list(model_current.packages[0].artifacts)[0].node
+
+    set_ref_pub = set((pub.name[0], pub.type[0]) for pub in node_ref.publishers)
+    set_current_pub = set((pub.name[0], pub.type[0]) for pub in node_current.publishers)
+
+    set_ref_sub = set((sub.name[0], sub.type[0]) for sub in node_ref.subscribers)
+    set_current_sub = set((sub.name[0], sub.type[0]) for sub in node_current.subscribers)
+
+    return tuple(set_ref_pub.intersection(set_current_pub)), tuple(set_ref_sub.intersection(set_current_sub))
