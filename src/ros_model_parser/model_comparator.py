@@ -55,14 +55,21 @@ def compare_rossystem_models(model_ref, model_current):
     # returning missing_interfaces, additional_interfaces
     return list(set_ref - set_current), list(set_current - set_ref), incorrect_params
 
+def _check_valid(interface_name, interface_type):
+    if interface_type == '?':
+        return False
+    # add more cases here if required
+
+    return True
+
 def extract_common_ros(model_ref, model_current):
     node_ref = list(model_ref.packages[0].artifacts)[0].node
     node_current = list(model_current.packages[0].artifacts)[0].node
 
-    set_ref_pub = set((pub.name[0], pub.type[0]) for pub in node_ref.publishers)
-    set_current_pub = set((pub.name[0], pub.type[0]) for pub in node_current.publishers)
+    set_ref_pub = set((strip_slash(pub.name[0]), pub.type[0]) for pub in node_ref.publishers if _check_valid(pub.name[0], pub.type[0]))
+    set_current_pub = set((strip_slash(pub.name[0]), pub.type[0]) for pub in node_current.publishers if _check_valid(pub.name[0], pub.type[0]))
 
-    set_ref_sub = set((sub.name[0], sub.type[0]) for sub in node_ref.subscribers)
-    set_current_sub = set((sub.name[0], sub.type[0]) for sub in node_current.subscribers)
+    set_ref_sub = set((strip_slash(sub.name[0]), sub.type[0]) for sub in node_ref.subscribers if _check_valid(sub.name[0], sub.type[0]))
+    set_current_sub = set((strip_slash(sub.name[0]), sub.type[0]) for sub in node_current.subscribers if _check_valid(sub.name[0], sub.type[0]))
 
     return tuple(set_ref_pub.intersection(set_current_pub)), tuple(set_ref_sub.intersection(set_current_sub))
