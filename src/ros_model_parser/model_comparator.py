@@ -72,4 +72,18 @@ def extract_common_ros(model_ref, model_current):
     set_ref_sub = set((strip_slash(sub.name[0]), sub.type[0]) for sub in node_ref.subscribers if _check_valid(sub.name[0], sub.type[0]))
     set_current_sub = set((strip_slash(sub.name[0]), sub.type[0]) for sub in node_current.subscribers if _check_valid(sub.name[0], sub.type[0]))
 
-    return tuple(set_ref_pub.intersection(set_current_pub)), tuple(set_ref_sub.intersection(set_current_sub))
+    set_ref_srv = set((strip_slash(srv.name[0]), srv.type[0]) for srv in node_ref.service_servers if _check_valid(srv.name[0], srv.type[0]))
+    set_current_srv = set((strip_slash(srv.name[0]), srv.type[0]) for srv in node_current.service_servers if _check_valid(srv.name[0], srv.type[0]))
+
+    set_ref_srv_cli = set((strip_slash(srv.name[0]), srv.type[0]) for srv in node_ref.service_clients if _check_valid(srv.name[0], srv.type[0]))
+    set_current_srv_cli = set((strip_slash(srv.name[0]), srv.type[0]) for srv in node_current.service_clients if _check_valid(srv.name[0], srv.type[0]))
+
+    set_ref_act = set((strip_slash(act.name[0]), act.type[0]) for act in node_ref.action_servers if _check_valid(act.name[0], act.type[0]))
+    set_current_act = set((strip_slash(act.name[0]), act.type[0]) for act in node_current.action_servers if _check_valid(act.name[0], act.type[0]))
+
+    set_ref_act_cli = set((strip_slash(act.name[0]), act.type[0]) for act in node_ref.action_clients if _check_valid(act.name[0], act.type[0]))
+    set_current_act_cli = set((strip_slash(act.name[0]), act.type[0]) for act in node_current.action_clients if _check_valid(act.name[0], act.type[0]))
+
+    return tuple(set_ref_pub.intersection(set_current_pub)), tuple(set_ref_sub.intersection(set_current_sub)), \
+        tuple(set_ref_srv.intersection(set_current_srv)), tuple(set_ref_srv_cli.intersection(set_current_srv_cli)), \
+        tuple(set_ref_act.intersection(set_current_act)), tuple(set_ref_act_cli.intersection(set_current_act_cli))
