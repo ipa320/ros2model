@@ -55,7 +55,7 @@ def compare_rossystem_models(model_ref, model_current):
     # returning missing_interfaces, additional_interfaces
     return list(set_ref - set_current), list(set_current - set_ref), incorrect_params
 
-def compare_ros_models(model_ref, model_current):
+def extract_common_ros(model_ref, model_current):
     node_ref = list(model_ref.packages[0].artifacts)[0].node
     node_current = list(model_current.packages[0].artifacts)[0].node
 
