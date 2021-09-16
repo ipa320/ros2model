@@ -12,8 +12,6 @@
 
   <maintainer email="nadia.hammoudeh.garcia@ipa.fraunhofer.de">Nadia Hammoudeh Garcia</maintainer>
   <license>Apache 2.0</license>
-
-  <buildtool_depend>catkin</buildtool_depend>
   
   <exec_depend>rclpy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rospkg</exec_depend>
