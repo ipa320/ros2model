@@ -22,12 +22,12 @@ import os.path
 import rospy
 from rospkg import RosPack
 
-def rossystem_parser_test():
+def ros_parser_test():
     rp = RosPack()
     model_path = os.path.join(rp.get_path("ros_model_parser"),"resources/cob_light.ros")
-    rossystem_parser = RosModelParser(model_path, isFile=True)
+    ros_parser = RosModelParser(model_path, isFile=True)
 
-    static_model = rossystem_parser.parse()
+    static_model = ros_parser.parse()
 
     package = static_model.packages[0]
     for artifact in package.artifacts:

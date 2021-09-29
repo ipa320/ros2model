@@ -23,8 +23,8 @@ class RosModelGenerator(object):
   def __init__(self):
     self.ros_model = model.RosModel()
 
-  def create_model_from_node(self, package_name, artifact_name, node):
-      package = model.Package(package_name)
+  def create_model_from_node(self, package_name, artifact_name, node, pkg_type="CatkinPackage"):
+      package = model.Package(package_name,pkg_type)
       artifact = model.Artifact(artifact_name, node)
       package.add_artifact(artifact)
       self.ros_model.add_package(package)

@@ -32,15 +32,20 @@ class RosModel(object):
         return ros_model_str
 
 class Package(object):
-    def __init__(self, name):
+    def __init__(self, name,pkg_type="CatkinPackage"):
         self.name = name
         self.artifacts=ArtifactSet()
+        if pkg_type not in ["CatkinPackage","AmentPackage","Package"]:
+          print("\n ERROR: Invalid package type given, supported types are CatkinPackage(for ROS1), AmentPackage(for ROS2) or Package(for non-ROS packages)\n")
+          return
+        else:
+          self.pkg_type = pkg_type
 
     def add_artifact(self, artifact):
         self.artifacts.add(artifact)
 
     def dump_xtext_model(self):
-        ros_model_str = "  CatkinPackage "+self.name+" {\n"
+        ros_model_str = "  "+self.pkg_type+" "+self.name+" {\n"
         ros_model_str += self.artifacts.dump_xtext_model()
         ros_model_str += "}"
         return ros_model_str

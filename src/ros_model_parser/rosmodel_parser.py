@@ -67,8 +67,9 @@ class RosModelParser(object):
             lambda tokens: float(tokens[0])) | string_value | Keyword("false") | Keyword("true") | listStr | mapStr
 
         _packageSet = Keyword("PackageSet").suppress()
-        #_package = Keyword("package").suppress()
+        _package = Keyword("Package").suppress()
         _catkin_pkg = Keyword("CatkinPackage").suppress()
+        _ament_pkg = Keyword("AmentPackage").suppress()
         _git_repo = Keyword("FromGitRepo").suppress()
         #_artifact = Keyword("artifact").suppress()
         _artifacts = Keyword("Artifact").suppress()
@@ -126,7 +127,7 @@ class RosModelParser(object):
 
         self.rospkg_grammar = _packageSet + \
             OCB + \
-            _catkin_pkg + name("pkg_name") + OCB + \
+            ( _catkin_pkg | _ament_pkg | _package ) + name("pkg_name") + OCB + \
             Optional(_git_repo + name("git_repo")) + \
             _artifacts + name("artifact_name") + OCB + \
             _nodes + OCB + _name + name("node_name") + \
