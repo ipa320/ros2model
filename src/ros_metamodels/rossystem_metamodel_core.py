@@ -88,7 +88,7 @@ class RosParameter(object):
 
     def get_type(self, value):
         itype = type(value)
-        itype = (str(itype)).replace("<type '", "").replace("'>", "")
+        itype = (str(itype)).replace("<", "").replace("class", "").replace("type", "").replace(" '", "").replace("'>", "")
         if itype == 'float':
             return 'Double'
         elif itype == 'bool':
