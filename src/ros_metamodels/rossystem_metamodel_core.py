@@ -97,11 +97,13 @@ class RosParameter(object):
             return 'Integer'
         elif itype == 'str':
             return 'String'
-        elif itype == 'list' or itype == 'dict':
-            if ":" in str(value):
+        elif itype == 'list':
+            if type(value[0]) == dict:
                 return 'Struc'
             else:
                 return 'List'
+        elif itype == 'dict':
+            return 'Struc'
         else:
             return itype
 

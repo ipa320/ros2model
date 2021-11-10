@@ -181,11 +181,13 @@ class Parameter(object):
             return 'Integer'
         elif param_type == 'str':
             return 'String'
-        elif param_type == 'list' or param_type == 'dict':
-            if ":" in str(value):
+        elif param_type == 'list':
+            if type(value[0]) == dict:
                 return 'Struc'
             else:
                 return 'List'
+        elif param_type == 'dict':
+            return 'Struc'
         else:
             return param_type
 
