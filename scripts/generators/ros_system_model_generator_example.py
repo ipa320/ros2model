@@ -32,7 +32,11 @@ def ros_system_model_generator_test():
 
 def ros_system_model_generator_list_test():
     generator = RosSystemModelGenerator('demo', 'my_ros_package')
-    components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [20, 'int']},
+    components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [['jackal_node: General',
+                                                                        'jackal_node: Battery',
+                                                                        'jackal_node: User voltage supplies',
+                                                                        'jackal_node: Current consumption',
+                                                                        'jackal_node: Power consumption'], list]},
                               'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
                                              '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
                               'subscribers': {'/gazebo/set_link_state': 'gazebo_msgs/LinkState',

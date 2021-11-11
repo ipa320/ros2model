@@ -51,8 +51,6 @@ class Component(object):
     def dump_xtext_model(self, package=""):
         system_model_str = "        ComponentInterface { name '" + \
             self.name+"'\n"
-        system_model_str += self.params.dump_xtext_model(
-            "            ", "Parameters", "Parameter", self.name, package)
         system_model_str += self.publishers.dump_xtext_model(
             "            ", "Publishers", "Publisher", self.name, package)
         system_model_str += self.subscribers.dump_xtext_model(
@@ -60,9 +58,11 @@ class Component(object):
         system_model_str += self.service_servers.dump_xtext_model(
             "            ", "SrvServers", "Server", self.name, package, "ServiceServer")
         system_model_str += self.action_servers.dump_xtext_model(
-            "            ", "ActionServers", "Server", self.name, package)
+            "            ", "ActionServers", "Server", self.name, package, "ActionServer")
         system_model_str += self.action_clients.dump_xtext_model(
-            "            ", "ActionClients", "Client", self.name, package)
+            "            ", "ActionClients", "Client", self.name, package, "ActionClient")
+        system_model_str += self.params.dump_xtext_model(
+            "            ", "Parameters", "Parameter", self.name, package)
         system_model_str += "        },\n"
         return system_model_str
 
@@ -97,11 +97,13 @@ class RosParameter(object):
             return 'Integer'
         elif itype == 'str':
             return 'String'
-        elif itype == 'list' or itype == 'dict':
-            if ":" in str(value):
+        elif itype == 'list':
+            if type(value[0]) == dict:
                 return 'Struc'
             else:
                 return 'List'
+        elif itype == 'dict':
+            return 'Struc'
         else:
             return itype
 
