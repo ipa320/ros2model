@@ -112,9 +112,9 @@ class Node(object):
       self.service_clients.add(Interface(name, srv_type))
 
     def add_action_client(self, name, act_type):
-      self.action_servers.add(Interface(name, act_type))
-    def add_action_server(self, name, act_type):
       self.action_clients.add(Interface(name, act_type))
+    def add_action_server(self, name, act_type):
+      self.action_servers.add(Interface(name, act_type))
 
     def add_parameter(self, name, value, type, default, set_value=True):
       self.params.add(Parameter(name, value, type, default, print_value=set_value))
