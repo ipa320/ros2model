@@ -72,6 +72,7 @@ class RosSystemModelParser(object):
         _name = CaselessKeyword("name").suppress()
         _component = Keyword("RosComponents").suppress()
         _interface = Keyword("ComponentInterface").suppress()
+        _base_node = Keyword("FromRosNode").suppress()
 
         # Parameter Def
         _parameters = Keyword("RosParameters").suppress()
@@ -178,16 +179,17 @@ class RosSystemModelParser(object):
                       OneOrMore(g_parameter + Optional(",").suppress()) + CCB)
 
         interface = Group(
-            _interface +
-            OCB +
-            _name + name("interface_name") +
-            Optional(publishers)("publishers") +
-            Optional(subscribers)("subscribers") +
-            Optional(services)("services") +
-            Optional(srv_clients)("srv_clients") +
-            Optional(action_servers)("action_servers") +
-            Optional(action_clients)("action_clients") +
-            Optional(parameters)("parameters") +
+            _interface + \
+            OCB + \
+            _name + name("interface_name") + \
+            Optional(_base_node + name("from_node")) + \
+            Optional(publishers)("publishers") + \
+            Optional(subscribers)("subscribers") + \
+            Optional(services)("services") + \
+            Optional(srv_clients)("srv_clients") + \
+            Optional(action_servers)("action_servers") + \
+            Optional(action_clients)("action_clients") + \
+            Optional(parameters)("parameters") + \
             CCB)
 
         self.rossystem_grammar = _system + \
