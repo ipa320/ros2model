@@ -50,7 +50,7 @@ class RosSystemModelParser(object):
 
 
         OCB, CCB, ORB, CRB, SQ, DQ, OSB, CSB = map(Suppress, "{}()'\"[]")
-        
+
         name = Optional(SQ) + Optional(DQ) + Word(printables,
                                    excludeChars="{},'") + Optional(SQ) + Optional(DQ)
 
@@ -181,13 +181,13 @@ class RosSystemModelParser(object):
             _interface +
             OCB +
             _name + name("interface_name") +
-            Optional(parameters)("parameters") +
             Optional(publishers)("publishers") +
             Optional(subscribers)("subscribers") +
             Optional(services)("services") +
             Optional(srv_clients)("srv_clients") +
             Optional(action_servers)("action_servers") +
             Optional(action_clients)("action_clients") +
+            Optional(parameters)("parameters") +
             CCB)
 
         self.rossystem_grammar = _system + \
