@@ -13,14 +13,16 @@ catkin_package()
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
   roslaunch_add_file_check(tests/model_generators_roslaunch_test.xml)
+  find_package(rostest REQUIRED)
+  add_rostest(tests/model_generators_roslaunch_test.xml)
 endif()
 
 # INSTALL
-catkin_install_python(PROGRAMS 
-  scripts/parsers/ros_system_parser_example.py 
-  scripts/parsers/ros_parser_example.py 
-  scripts/generators/ros_model_generator_example.py 
-  scripts/generators/ros_system_model_generator_example.py 
+catkin_install_python(PROGRAMS
+  scripts/parsers/ros_system_parser_example.py
+  scripts/parsers/ros_parser_example.py
+  scripts/generators/ros_model_generator_example.py
+  scripts/generators/ros_system_model_generator_example.py
   scripts/generators/ros_system_model_generator_from_rosparamyaml_example.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
