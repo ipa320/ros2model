@@ -16,23 +16,23 @@
 
 import imp
 
-from ros_model_generator.rosmodel_generator import RosModelGenerator
-from ros_metamodels.ros_metamodel_core import RosModel, Package, Node, Artifact
-
 import rospy
+
+from ros_metamodels.ros_metamodel_core import Artifact, Node, Package, RosModel
+from ros_model_generator.rosmodel_generator import RosModelGenerator
 
 
 def ros_model_generator_test():
-
     ros_model = RosModelGenerator()
     node = Node("test_node")
-    node.add_publisher("my_pub","std_msgs/Bool")
+    node.add_publisher("my_pub", "std_msgs/Bool")
     node.add_parameter("myIntParam", None, None, 25)
-    ros_model.create_model_from_node('my_ros_pkg',"test",node)
+    ros_model.create_model_from_node("my_ros_pkg", "test", node)
 
-    ros_model.generate_ros_model('/tmp/test.ros')
+    ros_model.generate_ros_model("/tmp/test.ros")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         ros_model_generator_test()
     except rospy.ROSInterruptException:

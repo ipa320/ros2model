@@ -13,12 +13,12 @@ This Ros package holds python interpreters for the [ROS models](https://github.c
 
 In addition, the Toolchain offers automatic extractors of the models from the original ROS code, on one hand with [static code analyzers](https://github.com/ipa320/ros-model-cloud) (based on [HAROS](https://github.com/git-afsantos/haros)) and on the other hand with [introspectors at runtime](https://github.com/ipa320/ros_graph_parser/).
 
-For the static code analysis we made available a web interface able to inspect code hosted on Git and get its model representation as feedback [http://ros-model.seronet-project.de/](http://ros-model.seronet-project.de/). 
+For the static code analysis we made available a web interface able to inspect code hosted on Git and get its model representation as feedback [http://ros-model.seronet-project.de/](http://ros-model.seronet-project.de/).
 
 
 To facilitate the use of the models parsers we included to this repository and example script for the both supported models:
 
-- Ros model parser [scripts/parsers/ros_parser_example.py](scripts/parsers/ros_parser_example.py) 
+- Ros model parser [scripts/parsers/ros_parser_example.py](scripts/parsers/ros_parser_example.py)
 - RosSystem model parser [scripts/parsers/ros_system_parser_example.py](scripts/parsers/ros_system_parser_example.py)
-- Ros model generator [scripts/generators/ros_model_generator_example.py](scripts/generators/ros_model_generator_example.py) 
+- Ros model generator [scripts/generators/ros_model_generator_example.py](scripts/generators/ros_model_generator_example.py)
 - RosSystem model parser [scripts/generators/ros_system_model_generator_example.py](scripts/generators/ros_system_model_generator_example.py)

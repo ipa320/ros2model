@@ -15,27 +15,31 @@
 # limitations under the License.
 
 import imp
+import os
 
-from ros_model_generator.rossystem_generator import RosSystemModelGenerator
-
+import rospkg
 import rospy
 import yaml
-import os, rospkg
+
+from ros_model_generator.rossystem_generator import RosSystemModelGenerator
 
 
 def ros_system_model_generator_test():
     ros_system_model = RosSystemModelGenerator()
     ros_system_model.setSystemName("test_system")
     rospack = rospkg.RosPack()
-    file_path=rospack.get_path("ros_model_parser")+'/resources/rosparam_example.yaml'
+    file_path = (
+        rospack.get_path("ros_model_parser") + "/resources/rosparam_example.yaml"
+    )
     for key, value in yaml.safe_load(open(os.path.join(file_path))).iteritems():
-        ros_system_model.addParameter(key,value)
+        ros_system_model.addParameter(key, value)
 
     ros_system_model.create_ros_system_model()
 
-    ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
+    ros_system_model.generate_ros_system_model("/tmp/test.rossystem")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         ros_system_model_generator_test()
     except rospy.ROSInterruptException:
