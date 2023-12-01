@@ -16,11 +16,26 @@
 
 from distutils.core import setup
 
-from catkin_pkg.python_setup import generate_distutils_setup
+from setuptools import find_packages, setup
 
-d = generate_distutils_setup(
-    packages=["ros_model_parser", "ros_model_generator", "ros_metamodels"],
-    package_dir={"": "src"},
+package_name = "ros2model"
+
+setup(
+    name=package_name,
+    version="0.0.0",
+    packages=find_packages(exclude=["test"]),
+    data_files=[
+        ("share/" + package_name, ["package.xml"]),
+        ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
+    ],
+    install_requires=["ros2cli", "jinja2", "pydantic", "pyaml", "lark", "devtools"],
+    zip_safe=True,
+    author="Nadia Hammoudeh Garcia, Ruichao Wu",
+    author_email="nadia.hammoudeh.garcia@ipa.fraunhofer.de, ruichao.wu@ipa.fraunhofer.de",
+    maintainer="Nadia Hammoudeh Garcia, Ruichao Wu",
+    maintainer_email="nadia.hammoudeh.garcia@ipa.fraunhofer.de, ruichao.wu@ipa.fraunhofer.de",
+    description="Parser for interface specifications",
+    license="Apache-2.0",
+    tests_require=["pytest"],
+    entry_points={},
 )
-
-setup(**d)
