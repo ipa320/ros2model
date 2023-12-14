@@ -1,0 +1,20 @@
+test_interfaces:
+  msgs:
+    Duration
+        message
+            int32 sec
+            int32 nanosec
+  srvs:
+    Trigger
+        request
+        response
+            int32 success
+            int32 message
+  actions:
+    Fibonacci
+        goal
+            int32 order
+        result
+            int32[] sequence
+        feedback
+            int32[] partial_sequence
