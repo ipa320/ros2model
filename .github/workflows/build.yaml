@@ -1,4 +1,4 @@
-name: ros_model_parser
+name: test_python_pkg
 
 on: [push, pull_request]
 
@@ -18,9 +18,21 @@ jobs:
           python-version: ${{ matrix.python-version_ubuntu-latest }}
 
       - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools wheel
+
+      - name: Install python pkgs
+        run: ./install.sh
+        shell: bash
+
+      - name: install pytest pytest-cov
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-cov
+
+      - name: Test with pytest
+        run: |
+          export COVERAGE=true
+          ./test.sh
+        shell: bash
 
   lint:
     name: pre-commit

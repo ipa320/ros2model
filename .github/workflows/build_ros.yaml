@@ -1,4 +1,4 @@
-name: CI
+name: test_as_ros_pkg
 
 on: [push, pull_request]
 
@@ -7,9 +7,7 @@ jobs:
     strategy:
       matrix:
         env:
-          - { ROS_DISTRO: melodic }
-          - { ROS_DISTRO: noetic }
-          - { ROS_DISTRO: humble }
+          - { ROS_DISTRO: humble, NOT_TEST_BUILD: true }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
