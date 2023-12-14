@@ -1,0 +1,47 @@
+{{ model.name }}:
+{% if model.topics()|length > 0 %}
+  msgs:
+{% for spec in model.topics() %}
+    {{ spec.name }}
+        message
+        {% for part in spec.message.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+{% endfor %}
+{% endif %}
+{% if model.services()|length > 0 %}
+  srvs:
+{% for spec in model.services() %}
+    {{ spec.name }}
+        request
+        {% if spec.request != None %}
+        {% for part in spec.request.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+        {% endif %}
+        response
+        {% for part in spec.response.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+{% endfor %}
+{% endif %}
+{% if model.services()|length > 0 %}
+  actions:
+{% for spec in model.actions() %}
+    {{ spec.name }}
+        goal
+        {% for part in spec.goal.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+        result
+        {% for part in spec.result.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+        feedback
+        {% if spec.feedback != None %}
+        {% for part in spec.feedback.messagePart %}
+            {{ part.type }} {{ part.data }}
+        {% endfor %}
+        {% endif %}
+{% endfor %}
+{% endif %}
