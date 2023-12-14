@@ -15,41 +15,63 @@
 # limitations under the License.
 
 
-from ros_model_generator.rossystem_generator import RosSystemModelGenerator
-
 import rospy
+
+from ros_model_generator.rossystem_generator import RosSystemModelGenerator
 
 
 def ros_system_model_generator_test():
     ros_system_model = RosSystemModelGenerator()
     ros_system_model.setSystemName("test_system")
-    ros_system_model.addParameter("mystring","test")
-    ros_system_model.addParameter("myIntParam",25)
+    ros_system_model.addParameter("mystring", "test")
+    ros_system_model.addParameter("myIntParam", 25)
 
     ros_system_model.create_ros_system_model()
 
-    ros_system_model.generate_ros_system_model('/tmp/test.rossystem')
+    ros_system_model.generate_ros_system_model("/tmp/test.rossystem")
+
 
 def ros_system_model_generator_list_test():
-    generator = RosSystemModelGenerator('demo', 'my_ros_package')
-    components = {'/gazebo': {'parameters' : {'/gazebo/link_states' : [['jackal_node: General',
-                                                                        'jackal_node: Battery',
-                                                                        'jackal_node: User voltage supplies',
-                                                                        'jackal_node: Current consumption',
-                                                                        'jackal_node: Power consumption'], list]},
-                              'publishers': {'/gazebo/link_states': 'gazebo_msgs/LinkStates',
-                                             '/gazebo/model_states': 'gazebo_msgs/ModelStates'},
-                              'subscribers': {'/gazebo/set_link_state': 'gazebo_msgs/LinkState',
-                                              '/gazebo/set_model_state': 'gazebo_msgs/ModelState'},
-                              'service_servers': {'/gazebo/spawn_sdf_model': 'gazebo_msgs/SpawnModel',
-                                                  '/gazebo/spawn_urdf_model': 'gazebo_msgs/SpawnModel'}},
-                 '/fibonacci': {'action_servers': {'/fibonacci': 'actionlib_tutorials/Fibonacci'}},
-                                'global_parameters' : {'/gazebo/link_states' : [20, 'int']}}
+    generator = RosSystemModelGenerator("demo", "my_ros_package")
+    components = {
+        "/gazebo": {
+            "parameters": {
+                "/gazebo/link_states": [
+                    [
+                        "jackal_node: General",
+                        "jackal_node: Battery",
+                        "jackal_node: User voltage supplies",
+                        "jackal_node: Current consumption",
+                        "jackal_node: Power consumption",
+                    ],
+                    list,
+                ]
+            },
+            "publishers": {
+                "/gazebo/link_states": "gazebo_msgs/LinkStates",
+                "/gazebo/model_states": "gazebo_msgs/ModelStates",
+            },
+            "subscribers": {
+                "/gazebo/set_link_state": "gazebo_msgs/LinkState",
+                "/gazebo/set_model_state": "gazebo_msgs/ModelState",
+            },
+            "service_servers": {
+                "/gazebo/spawn_sdf_model": "gazebo_msgs/SpawnModel",
+                "/gazebo/spawn_urdf_model": "gazebo_msgs/SpawnModel",
+            },
+        },
+        "/fibonacci": {
+            "action_servers": {"/fibonacci": "actionlib_tutorials/Fibonacci"}
+        },
+        "global_parameters": {"/gazebo/link_states": [20, "int"]},
+    }
 
-    generator.generate_ros_system_model_list(components, '/tmp/test_list.rossystem', '/tmp/test_list.ros')
+    generator.generate_ros_system_model_list(
+        components, "/tmp/test_list.rossystem", "/tmp/test_list.ros"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         ros_system_model_generator_test()
         ros_system_model_generator_list_test()

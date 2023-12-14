@@ -14,7 +14,7 @@
   <license>Apache 2.0</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
+
   <depend>rospy</depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-rospkg</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-rospkg</exec_depend>
@@ -22,4 +22,3 @@
   <test_depend>roslaunch</test_depend>
 
 </package>
-

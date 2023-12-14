@@ -1,5 +1,5 @@
 RosSystem { Name 'demo'
-    RosComponents ( 
+    RosComponents (
 
         ComponentInterface { name '/gazebo'
             RosPublishers {

@@ -1,6 +1,6 @@
 PackageSet {
   AmentPackage turtlesim {
-    FromGitRepo "https://github.com/ros/ros_tutorials" 
+    FromGitRepo "https://github.com/ros/ros_tutorials"
     Artifact turtlesim_node {
       Node { name turtlesim_node
         ServiceServers {
