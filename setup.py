@@ -28,7 +28,7 @@ setup(
         ("share/" + package_name, ["package.xml"]),
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
     ],
-    install_requires=["ros2cli", "jinja2", "pydantic", "pyaml", "lark", "devtools"],
+    install_requires=["jinja2", "pydantic", "pyaml", "lark", "devtools"],
     zip_safe=True,
     author="Nadia Hammoudeh Garcia, Ruichao Wu",
     author_email="nadia.hammoudeh.garcia@ipa.fraunhofer.de, ruichao.wu@ipa.fraunhofer.de",
