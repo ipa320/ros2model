@@ -28,7 +28,15 @@ setup(
         ("share/" + package_name, ["package.xml"]),
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
     ],
-    install_requires=["jinja2", "pydantic", "pyaml", "lark", "devtools"],
+    install_requires=[
+        "jinja2",
+        "pydantic",
+        "pyaml",
+        "lark",
+        "devtools",
+        "numpy",
+        "netifaces",
+    ],
     zip_safe=True,
     author="Nadia Hammoudeh Garcia, Ruichao Wu",
     author_email="nadia.hammoudeh.garcia@ipa.fraunhofer.de, ruichao.wu@ipa.fraunhofer.de",
@@ -37,5 +45,15 @@ setup(
     description="Parser for interface specifications",
     license="Apache-2.0",
     tests_require=["pytest"],
-    entry_points={},
+    entry_points={
+        "ros2cli.command": [
+            "model = ros2model.command.model:ModelCommand",
+        ],
+        "ros2cli.extension_point": [
+            "ros2model.verb = ros2model.verb:VerbExtension",
+        ],
+        "ros2model.verb": [
+            "node = ros2model.verb.runtime_node:RuntimeNodeVerb",
+        ],
+    },
 )

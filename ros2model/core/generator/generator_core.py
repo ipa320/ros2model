@@ -46,7 +46,9 @@ class GeneratorCore:
             )
         self.ext = extention
 
-    def generate_a_file(self, model: object, output_dir: t.Union[str, Path]):
+    def generate_a_file(
+        self, model: object, output_dir: t.Union[str, Path], filename: str
+    ):
         """
         Generate a file based on provided model and a template.
         Generated file will be named as the name of provided model
@@ -56,6 +58,6 @@ class GeneratorCore:
             output_dir (str or Path): The folder storing a generated file
         """
         output_dir_path = Path(output_dir).resolve()
-        generator = FileGenerator(output_dir_path)
-        output_file_path = Path(output_dir_path / f"{model.name}{self.ext}")
+        generator = FileGenerator(output_dir_path.as_posix())
+        output_file_path = output_dir_path / f"{filename}{self.ext}"
         generator.generate_file(self.template_path, output_file_path, model=model)

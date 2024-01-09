@@ -15,25 +15,19 @@
 #
 
 from pathlib import Path
+
 from ros2model.core.generator.generator_core import GeneratorCore
-import ros2model.core.metamodels.metamodel_ros as ROSModel
-import logging
-from devtools import pprint
+from ros2model.core.generator.file_generator import FileGenerator
+import typing as t
 
 Template_Folder = Path(__file__).parent.resolve() / "templates"
-Template = Path(Template_Folder / "message.ros.j2")
+Template = Path(Template_Folder / "component.ros2.j2")
 
 
-class MessageGenerator(GeneratorCore):
+class ComponentGenerator(GeneratorCore):
     def __init__(self, template_path=None) -> None:
         if template_path != None:
             self.template_path = Path(template_path).resolve()
         else:
             self.template_path = Template
-        super().__init__(self.template_path, ".ros")
-
-    def generate_a_package(self, rosmodel: ROSModel.Package, output_dir: str):
-        if rosmodel.spec_defined:
-            super().generate_a_file(
-                model=rosmodel, output_dir=output_dir, filename=rosmodel.name
-            )
+        super().__init__(self.template_path, ".ros2")
