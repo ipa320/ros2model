@@ -18,31 +18,69 @@
 
 ## ROS MODEL METAMODEL ##
 
-from pydantic import BaseModel, Field, field_validator, ValidationInfo
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+    ValidationInfo,
+    computed_field,
+)
 from typing import List
 from typing import Optional
-import logging
-import typing as t
+from enum import Enum
 
-GraphName = t.NewType("GraphName", str)
+# GraphName = t.NewType("GraphName", str)
 
 
-class Namespace(BaseModel):
-    parts: List[GraphName] = Field(default_factory=list)
+def set_full_name(namespace: str, name: str) -> str:
+    if namespace != "/":
+        full_name = f"{namespace}/{name}"
+    elif name.startswith("/"):
+        full_name = name
+    else:
+        full_name = f"/{name}"
+    return full_name
+
+
+class GraphName(BaseModel):
+    name: str
+    namespace: str
+    full_name: Optional[str] = None
+
+    @field_validator("full_name")
+    def set_full_name(cls, v: str, info: ValidationInfo) -> str:
+        namespace = info.data.get("namespace")
+        name = info.data.get("name")
+        full_name = set_full_name(namespace, name)
+        if v is None:
+            return full_name
+        else:
+            return v
 
 
 class QualityOfService(BaseModel):
-    qoSProfile: str
-    history: str
-    depth: int
-    reliability: str
-    durability: str
+    history: Optional[str] = None
+    reliability: Optional[str] = None
+    durability: Optional[str] = None
+    lifespan: Optional[str] = None
+    deadline: Optional[int] = None
+    liveliness: Optional[str] = None
+    liveliness_lease_duration: Optional[int] = None
 
 
 class InterfaceType(BaseModel):
-    namespace: Optional[Namespace] = None
-    name: GraphName
+    namespace: Optional[str] = None
+    name: str
     qos: Optional[QualityOfService] = None
+
+    @computed_field
+    @property
+    def full_name(self) -> str:
+        if self.namespace != "/":
+            full_name = f"{self.namespace}/{self.name}"
+        else:
+            full_name = f"{self.namespace}{self.name}"
+        return full_name
 
 
 class InterfaceTypeImpl(InterfaceType):
@@ -161,8 +199,15 @@ class Dependency(BaseModel):
     pass
 
 
-class Parameter(InterfaceType):
-    pass
+class ParameterType(str, Enum):
+    int = "Integer"
+    double = "Double"
+    bool = "Boolean"
+
+
+class Parameter(InterfaceTypeImpl):
+    type: str
+    value: str
 
 
 class Node(BaseModel):
@@ -178,7 +223,7 @@ class Node(BaseModel):
 
 class Artifact(BaseModel):
     name: str
-    node: List[Node]
+    node: List[Node] = Field(default_factory=list)
 
 
 class Package(BaseModel):
