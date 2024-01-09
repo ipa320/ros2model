@@ -15,11 +15,10 @@
 #
 
 from pathlib import Path
-
+from ros2model.core.generator.generator_core import GeneratorCore
 import ros2model.core.metamodels.metamodel_ros as ROSModel
 import logging
 from devtools import pprint
-from ros2model.core.generator.generator_core import GeneratorCore
 
 Template_Folder = Path(__file__).parent.resolve() / "templates"
 Template = Path(Template_Folder / "message.ros.j2")
@@ -33,6 +32,8 @@ class MessageGenerator(GeneratorCore):
             self.template_path = Template
         super().__init__(self.template_path, ".ros")
 
-    def generate_an_package(self, rosmodel: ROSModel.Package, output_dir: str):
+    def generate_a_package(self, rosmodel: ROSModel.Package, output_dir: str):
         if rosmodel.spec_defined:
-            super().generate_a_file(rosmodel, output_dir)
+            super().generate_a_file(
+                model=rosmodel, output_dir=output_dir, filename=rosmodel.name
+            )

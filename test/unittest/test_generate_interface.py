@@ -1,6 +1,5 @@
 import unittest
 from pathlib import Path
-
 from ros2model.api.model_generator.message_generator import MessageGenerator
 from ros2model.core.metamodels.metamodel_ros import *
 
@@ -81,7 +80,7 @@ class test_message_generator(unittest.TestCase):
         self.output_dir = Path(self.test_dir / output_folder)
 
     def test_generate_pkg(self):
-        self.generator.generate_an_package(
+        self.generator.generate_a_package(
             rosmodel=test_interfaces, output_dir=self.output_dir
         )
         with open(Path(self.output_dir / f"{test_interfaces.name}.ros"), "r") as file:
