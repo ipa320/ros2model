@@ -1,0 +1,50 @@
+{{ model.name }}:
+  artifacts:
+  {% for artifact in model.artifact %}
+    {{ artifact.name }}:
+      {% for node in artifact.node %}
+      node: {{ node.name.full_name }}
+      {% if node.publisher | length >0 %}
+      publishers:
+        {% for interface in node.publisher %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.subscriber | length >0 %}
+      subscribers:
+        {% for interface in node.subscriber %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.actionserver | length >0 %}
+      actionservers:
+        {% for interface in node.actionserver %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.subscriber | length >0 %}
+      actionclients:
+        {% for interface in node.actionclient %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.serviceserver | length >0 %}
+      serviceservers:
+        {% for interface in node.serviceserver %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.serviceclient | length >0 %}
+      serviceclients:
+        {% for interface in node.serviceclient %}
+        '{{ interface.name }}':
+          type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% endfor %}
+  {% endfor %}
