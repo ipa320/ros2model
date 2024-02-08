@@ -27,6 +27,10 @@ setup(
     data_files=[
         ("share/" + package_name, ["package.xml"]),
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
+        (
+            "share/" + package_name + "/templates",
+            ["templates/component.ros2.j2", "templates/rossystem.rossystem.j2"],
+        ),
     ],
     install_requires=[
         "jinja2",
@@ -54,6 +58,7 @@ setup(
         ],
         "ros2model.verb": [
             "node = ros2model.verb.runtime_node:RuntimeNodeVerb",
+            "system = ros2model.verb.runtime_system:RuntimeVerb",
         ],
     },
 )

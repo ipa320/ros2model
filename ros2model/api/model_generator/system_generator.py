@@ -21,13 +21,13 @@ import typing as t
 from ament_index_python import get_package_share_directory
 
 Template_Folder = Path(__file__).parent.parent.parent.parent.resolve() / "templates"
-Template = Path(Template_Folder / "component.ros2.j2")
+Template = Path(Template_Folder / "rossystem.rossystem.j2")
 
 Template_Folder_ROS = Path(get_package_share_directory("ros2model") + "/templates")
-Template_ROS = Path(Template_Folder_ROS / "component.ros2.j2")
+Template_ROS = Path(Template_Folder_ROS / "rossystem.rossystem.j2")
 
 
-class ComponentGenerator(GeneratorCore):
+class SystemGenerator(GeneratorCore):
     def __init__(self, template_path=None) -> None:
         if template_path != None:
             self.template_path = Path(template_path).resolve()
@@ -39,4 +39,4 @@ class ComponentGenerator(GeneratorCore):
             raise FileNotFoundError(
                 f"Can't find template either from {Template.absolute().as_posix()} or {Template_ROS.absolute().as_posix()}"
             )
-        super().__init__(self.template_path, ".ros2")
+        super().__init__(self.template_path, ".rossystem")

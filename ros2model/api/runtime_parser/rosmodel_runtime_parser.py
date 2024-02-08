@@ -1,3 +1,5 @@
+import re
+import subprocess
 import ros2model.core.metamodels.metamodel_ros as ROSModel
 from ros2model.core.metamodels.metamodel_ros import set_full_name
 import ros2node.api as ROS2Node
@@ -7,7 +9,13 @@ from pydantic import BaseModel
 from pathlib import Path
 from rclpy.topic_endpoint_info import TopicEndpointInfo
 import rclpy
+from rcl_interfaces.msg import ParameterType
+
 from collections import namedtuple
+from ros2param.api import (
+    call_list_parameters,
+    call_describe_parameters,
+)
 
 Topic_BlackList = ["/parameter_events", "/rosout"]
 Service_BlackList = [
@@ -20,6 +28,24 @@ Service_BlackList = [
 ]
 
 TopicInfoVerbose = namedtuple("TopicInfoVerbose", ("full_name", "info"))
+
+ParameterReg = "^qos_overrides\..*$"
+
+
+def get_parameter_type_string(parameter_type):
+    mapping = {
+        ParameterType.PARAMETER_BOOL: "Boolean",
+        ParameterType.PARAMETER_INTEGER: "Integer",
+        ParameterType.PARAMETER_DOUBLE: "Double",
+        ParameterType.PARAMETER_STRING: "String",
+        ParameterType.PARAMETER_BYTE_ARRAY: "Array: Byte",
+        ParameterType.PARAMETER_BOOL_ARRAY: "Array: Boolean",
+        ParameterType.PARAMETER_INTEGER_ARRAY: "Array: Integer",
+        ParameterType.PARAMETER_DOUBLE_ARRAY: "Array: Double",
+        ParameterType.PARAMETER_STRING_ARRAY: "Array: String",
+        ParameterType.PARAMETER_NOT_SET: "Any",
+    }
+    return mapping[parameter_type]
 
 
 def get_interface_name(node_namespace: str, interface_name: str):
@@ -71,14 +97,24 @@ def parse_interface(
     getattr(node, typee).append(interface)
 
 
+def set_name(namespace: str, full_name: str) -> str:
+    if namespace == "/":
+        name = full_name[1:]
+    else:
+        name = full_name[len(namespace) + 1 :]
+    return name
+
+
 def parse_interface_verbose(
     node: ROSModel.Node, typee: str, topic_endpoint_info: TopicInfoVerbose
 ):
     if topic_endpoint_info.full_name not in Topic_BlackList:
-        print(f"topic name again: {topic_endpoint_info.full_name}\n")
+        print(
+            f"topic name again: {topic_endpoint_info.full_name[len(node.name.namespace) :]}\n"
+        )
         interface = ROSModel.InterfaceTypeImpl(
             namespace=node.name.namespace,
-            name=topic_endpoint_info.full_name[len(node.name.namespace) :],
+            name=set_name(node.name.namespace, topic_endpoint_info.full_name),
             type=topic_endpoint_info.info.topic_type,
             qos=ROSModel.QualityOfService(
                 deadline=topic_endpoint_info.info.qos_profile.deadline.nanoseconds,
@@ -214,6 +250,53 @@ class RunTimeNode(ROSModel.Node):
         except AttributeError:
             pass
 
+    def get_parameters(self, node, include_hidden_nodes=False):
+        # for humble
+        new_proc = subprocess.Popen(["rosversion", "-d"], stdout=subprocess.PIPE)
+        version_str = new_proc.communicate()[0].decode("utf-8").rstrip("\n")
+
+        sorted_names = []
+        if version_str == "humble":
+            from rcl_interfaces.srv import ListParameters
+            from ros2service.api import get_service_names
+
+            service_names = get_service_names(
+                node=node, include_hidden_services=include_hidden_nodes
+            )
+            service_name = f"{self.name.full_name}/list_parameters"
+
+            if service_name in service_names:
+                client = node.create_client(ListParameters, service_name)
+                if client.service_is_ready():
+                    request = ListParameters.Request()
+                    future = client.call_async(request)
+                    rclpy.spin_until_future_complete(node, future, timeout_sec=1.0)
+                    if future.result() != None:
+                        response = future.result()
+                        sorted_names = sorted(response.result.names)
+
+        if version_str == "rolling":
+            response = call_list_parameters(node=node, node_name=self.name.full_name)
+            if response.result() != None:
+                param_names = response.result().result.names
+                sorted_names = sorted(param_names)
+
+        regex_filter = re.compile(ParameterReg)
+        sorted_names = [name for name in sorted_names if not regex_filter.match(name)]
+        des_resp = call_describe_parameters(
+            node=node,
+            node_name=self.name.full_name,
+            parameter_names=sorted_names,
+        )
+        for descriptor in des_resp.descriptors:
+            self.parameter.append(
+                ROSModel.Parameter(
+                    name=descriptor.name,
+                    namespace=self.name.namespace,
+                    type=get_parameter_type_string(descriptor.type),
+                )
+            )
+
 
 def get_node_graph_names():
     args = NodeArgs(node_name="get_all_nodes")
@@ -243,6 +326,7 @@ def parse(
         parsed_node.get_service_clients(node, include_hidden=include_hidden_interfaces)
         parsed_node.get_action_clients(node, include_hidden=include_hidden_interfaces)
         parsed_node.get_action_servers(node, include_hidden=include_hidden_interfaces)
+        parsed_node.get_parameters(node)
         return parsed_node
 
 

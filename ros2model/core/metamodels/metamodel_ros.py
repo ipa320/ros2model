@@ -206,8 +206,7 @@ class ParameterType(str, Enum):
 
 
 class Parameter(InterfaceTypeImpl):
-    type: str
-    value: str
+    value: Optional[str] = None
 
 
 class Node(BaseModel):
@@ -270,6 +269,42 @@ class CatkinPackage(Package):
 
 class AmentPackage(Package):
     pass
+
+
+class Process(BaseModel):
+    name: str
+    threads: Optional[int]
+    components: List[str] = Field(default_factory=list)
+
+
+class RosInterface(BaseModel):
+    name: str
+    reference: str
+
+
+class RosParameter(BaseModel):
+    name: str
+    value: str
+    reffrom: str
+
+
+class RosNode(BaseModel):
+    name: str
+    reffrom: str
+    rosinterfaces: List[RosInterface] = Field(default_factory=list)
+    rosparameters: List[RosParameter] = Field(default_factory=list)
+
+
+class Connection(BaseModel):
+    reffrom: str
+    to: str
+
+
+class Rossystem(BaseModel):
+    name: str
+    proccesses: List[Process] = Field(default_factory=list)
+    nodes: List[Node] = Field(default_factory=list)
+    parameters: List[Parameter] = Field(default_factory=list)
 
 
 # serialized = dump(builtin_interfaces.model_dump()).strip()

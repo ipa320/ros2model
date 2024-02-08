@@ -1,0 +1,25 @@
+{{ model.name }}:
+  nodes:
+  {% for node in model.nodes %}
+    "{{ node.name.full_name }}":
+      from: "TODO.{{ node.name.full_name }}"
+      interfaces:
+      {% for interface in node.publisher %}
+      	- "{{ interface.name }}" : pub-> "TODO::{{ interface.name }}"
+      {% endfor %}
+      {% for interface in node.subscriber %}
+      	- "{{ interface.name }}" : sub-> "TODO::{{ interface.name }}"
+      {% endfor %}
+      {% for interface in node.actionserver %}
+      	- "{{ interface.name }}": as-> "TODO::{{ interface.name }}"
+      {% endfor %}
+      {% for interface in node.actionclient %}
+      	- "{{ interface.name }}" : ac-> "TODO::{{ interface.name }}"
+      {% endfor %}
+      {% for interface in node.serviceserver %}
+      	- "{{ interface.name }}" : ss-> "TODO::{{ interface.name }}"
+      {% endfor %}
+      {% for interface in node.serviceclient %}
+      	- "{{ interface.name }}" : sc-> "TODO::{{ interface.name }}"
+      {% endfor %}
+  {% endfor %}
