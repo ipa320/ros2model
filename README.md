@@ -2,8 +2,8 @@
 
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![ROS Build Status](https://www.travis-ci.com/ipa320/ros_model_parser.svg?branch=master)](https://www.travis-ci.com/github/ipa320/ros_model_parser)
-[![Python Build Status](https://github.com/ipa320/ros_model_parser/actions/workflows/build.yaml/badge.svg)](https://github.com/ipa320/ros_model_parser/actions/workflows/build.yaml)
+[![ROS Build Status](https://www.travis-ci.com/ipa320/ros2model.svg?branch=master)](https://www.travis-ci.com/github/ipa320/ros2model)
+[![Python Build Status](https://github.com/ipa320/ros2model/actions/workflows/build.yaml/badge.svg)](https://github.com/ipa320/ros2model/actions/workflows/build.yaml)
 
 
 Technical Maintainer: [**ipa-nhg**](https://github.com/ipa-nhg/) (**Nadia Hammoudeh Garcia**, **Fraunhofer IPA**) - **nadia.hammoudeh.garcia@ipa.fraunhofer.de**
@@ -16,9 +16,79 @@ In addition, the Toolchain offers automatic extractors of the models from the or
 For the static code analysis we made available a web interface able to inspect code hosted on Git and get its model representation as feedback [http://ros-model.seronet-project.de/](http://ros-model.seronet-project.de/).
 
 
-To facilitate the use of the models parsers we included to this repository and example script for the both supported models:
+## Install
+1. clone this repository into the source folder in your workspace, such as:
+    ```
+    ws/src/ros2model
+    ```
+2. enter the folder "ws/src/ros2model"
+   run
+    ```
+    ./install.sh
+    ```
 
-- Ros model parser [scripts/parsers/ros_parser_example.py](scripts/parsers/ros_parser_example.py)
-- RosSystem model parser [scripts/parsers/ros_system_parser_example.py](scripts/parsers/ros_system_parser_example.py)
-- Ros model generator [scripts/generators/ros_model_generator_example.py](scripts/generators/ros_model_generator_example.py)
-- RosSystem model parser [scripts/generators/ros_system_model_generator_example.py](scripts/generators/ros_system_model_generator_example.py)
+3. go back to "ws/":
+    compile it as ros package
+    ```
+    colcon build --packages-up-to ros2model --symlink-install
+    ```
+
+## Run
+1. Create ros node models from a run-time system:
+    ```
+
+    ros2 model node -o test/nodes # it will save generated file in folder "test/nodes"
+    ```
+
+    You can run the command below to get more usage information.
+    ```
+    ros2 model node -h
+    ```
+
+    ```
+    usage: ros2 model node [-h] [--spin-time SPIN_TIME] [-s] [--no-daemon] [-o OUTPUT_FOLDER] [--include_hidden_nodes]
+                        [--include_hidden_interfaces]
+
+    Create .ros2 for each node in a runtime system
+
+    options:
+    -h, --help            show this help message and exit
+    --spin-time SPIN_TIME
+                            Spin time in seconds to wait for discovery (only applies when not using an already running daemon)
+    -s, --use-sim-time    Enable ROS simulation time
+    --no-daemon           Do not spawn nor use an already running daemon
+    -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
+                            The folder for storing the generated models.
+    --include_hidden_nodes
+                            Consider hidden nodes.
+    --include_hidden_interfaces
+                            Consider hidden topics, services or actions.
+    ```
+
+2. Create a ros system model from a run-time system:
+    ```
+    ros2 model system -o test/turtlesim # save the system in test folder and named as "turtlesim.rossystem"
+    ```
+    You can run the command below to get more usage information.
+    ```
+    ros2 model system -h
+    ```
+    ```
+    usage: ros2 model system [-h] [--spin-time SPIN_TIME] [-s] [--no-daemon] [-o OUTPUT_FILE] [--include_hidden_nodes]
+                         [--include_hidden_interfaces]
+
+    Create .rossystem for a runtime system
+
+    options:
+    -h, --help            show this help message and exit
+    --spin-time SPIN_TIME
+                            Spin time in seconds to wait for discovery (only applies when not using an already running daemon)
+    -s, --use-sim-time    Enable ROS simulation time
+    --no-daemon           Do not spawn nor use an already running daemon
+    -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                            The system model file path.
+    --include_hidden_nodes
+                            Consider hidden nodes.
+    --include_hidden_interfaces
+                            Consider hidden topics, services or actions.
+    ```
