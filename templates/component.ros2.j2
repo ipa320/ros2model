@@ -9,6 +9,14 @@
         {% for interface in node.publisher %}
         '{{ interface.name }}':
           type: '{{ interface.type }}'
+          {% if interface.qos != none %}
+          qos:
+          # profile:
+          # history: {{ interface.qos.history }}
+          # depth:
+            reliability: {{ interface.qos.reliability.lower() }}
+            durability: {{ interface.qos.durability.lower() }}
+          {% endif %}
         {% endfor %}
       {% endif %}
       {% if node.subscriber | length >0 %}
@@ -25,7 +33,7 @@
           type: '{{ interface.type }}'
         {% endfor %}
       {% endif %}
-      {% if node.subscriber | length >0 %}
+      {% if node.actionclient | length >0 %}
       actionclients:
         {% for interface in node.actionclient %}
         '{{ interface.name }}':
@@ -44,6 +52,13 @@
         {% for interface in node.serviceclient %}
         '{{ interface.name }}':
           type: '{{ interface.type }}'
+        {% endfor %}
+      {% endif %}
+      {% if node.parameter | length >0 %}
+      parameters:
+        {% for parameter in node.parameter %}
+        '{{ parameter.name }}':
+          type: {{ parameter.type }}
         {% endfor %}
       {% endif %}
       {% endfor %}

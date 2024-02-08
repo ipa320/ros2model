@@ -1,0 +1,11 @@
+test_system:
+  nodes:
+    "/map_server":
+      from: "TODO./map_server"
+      interfaces:
+      	- "map_metadata": pub-> "TODO::map_metadata"
+      	- "map": pub-> "TODO::map"
+      	- "static_map": as-> "TODO::static_map"
+      	- "static_map": ac-> "TODO::static_map"
+      	- "static_map": ss-> "TODO::static_map"
+      	- "static_map": sc-> "TODO::static_map"
