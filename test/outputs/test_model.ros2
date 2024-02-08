@@ -1,0 +1,24 @@
+test_model:
+  artifacts:
+    map_server:
+      node: /map_server
+      publishers:
+        'map_metadata':
+          type: 'nav_msgs/msg/MapMetaData'
+        'map':
+          type: 'nav_msgs/msg/OccupancyGrid'
+      actionservers:
+        'static_map':
+          type: 'nav_msgs/srv/GetMap'
+      actionclients:
+        'static_map':
+          type: 'nav_msgs/srv/GetMap'
+      serviceservers:
+        'static_map':
+          type: 'nav_msgs/srv/GetMap'
+      serviceclients:
+        'static_map':
+          type: 'nav_msgs/srv/GetMap'
+      parameters:
+        'shadows/min_angle':
+          type: Double
