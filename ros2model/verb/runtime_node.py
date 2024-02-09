@@ -7,6 +7,8 @@ from ros2model.api.model_generator.component_generator import ComponentGenerator
 import ros2model.api.runtime_parser.rosmodel_runtime_parser as RuntimeParser
 import ros2model.core.metamodels.metamodel_ros as ROSModel
 
+import psutil
+import sys
 
 class RuntimeNodeVerb(VerbExtension):
     """Create .ros2 for each node in a runtime system"""
@@ -43,6 +45,17 @@ class RuntimeNodeVerb(VerbExtension):
         else:
             file_name = f"{grapg_name.namespace[1:]}__{n}"
             return file_name
+            
+    def find_process_by_node_name(self, node_name, namespace):
+        for process in psutil.process_iter(['pid', 'cmdline']):
+            try:
+                cmdline = process.info['cmdline']
+                if namespace in str(cmdline) and node_name in str(cmdline):
+                    cmdline_list = cmdline[0].split('/')
+                    return cmdline_list[-2], cmdline_list[-1]
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        return 'TODO', 'TODO'
 
     def main(self, *, args):
         output_dir = Path(args.output_folder)
@@ -60,9 +73,10 @@ class RuntimeNodeVerb(VerbExtension):
                 args.include_hidden_nodes,
                 args.include_hidden_interfaces,
             )
+            package_name, artifact_name = self.find_process_by_node_name(n.name, n.namespace)
             runtime_pkg = ROSModel.Package(
-                name="TODO",
-                artifact=[ROSModel.Artifact(name="TODO", node=[node_instance])],
+                name=package_name,
+                artifact=[ROSModel.Artifact(name=artifact_name, node=[node_instance])],
             )
             node_generator.generate_a_file(
                 model=runtime_pkg,
