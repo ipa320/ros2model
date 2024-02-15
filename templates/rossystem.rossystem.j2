@@ -3,6 +3,7 @@
   {% for node in model.nodes %}
     "{{ node.name.full_name }}":
       from: "TODO.{{ node.name.full_name }}"
+      {% if node.publisher | length > 0 or node.subscriber | length > 0 or node.actionserver | length > 0 or node.actionclient | length > 0 or node.serviceserver | length > 0 or node.serviceclient | length > 0%}
       interfaces:
       {% for interface in node.publisher %}
       	- "{{ interface.name }}": pub-> "TODO::{{ interface.name }}"
@@ -22,4 +23,5 @@
       {% for interface in node.serviceclient %}
       	- "{{ interface.name }}": sc-> "TODO::{{ interface.name }}"
       {% endfor %}
+      {% endif %}
   {% endfor %}
