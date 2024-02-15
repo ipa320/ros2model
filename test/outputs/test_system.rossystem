@@ -1,7 +1,7 @@
 test_system:
   nodes:
     "/map_server":
-      from: "TODO./map_server"
+      from: "/map_server"
       interfaces:
       	- "map_metadata": pub-> "TODO::map_metadata"
       	- "map": pub-> "TODO::map"

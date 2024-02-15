@@ -2,7 +2,7 @@
   nodes:
   {% for node in model.nodes %}
     "{{ node.name.full_name }}":
-      from: "{{ node.name.full_name }}"
+      from: "{{ node.name.pkg_name }}.{{ node.name.full_name }}"
       {% if node.publisher | length > 0 or node.subscriber | length > 0 or node.actionserver | length > 0 or node.actionclient | length > 0 or node.serviceserver | length > 0 or node.serviceclient | length > 0 %}
       interfaces:
       {% for interface in node.publisher %}
@@ -18,7 +18,7 @@
       	- "{{ interface.name }}": ac-> "TODO::{{ interface.name }}"
       {% endfor %}
       {% for interface in node.serviceserver %}
-      	- "{{ interface.name }}": ss-> "TODO::{{ interface.name }}"
+      	- "{{ interface.name }}": ss-> "{{ node.name.artifact_name }}::{{ interface.name }}"
       {% endfor %}
       {% for interface in node.serviceclient %}
       	- "{{ interface.name }}": sc-> "TODO::{{ interface.name }}"
@@ -27,7 +27,7 @@
       {% if node.parameter | length > 0 %}
       parameters:
         {% for parameter in node.parameter %}
-        - {{ parameter.name }}: "{{ node.name.full_name }}.{{ parameter.name }}"
+        - {{ parameter.name }}: "TODO::{{ parameter.name }}"
           {% if parameter.type == "String" %}
           value: "{{ parameter.value }}"
           {% elif parameter.type == "Boolean" %}
