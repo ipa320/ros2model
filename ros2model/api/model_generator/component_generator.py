@@ -18,8 +18,12 @@ from pathlib import Path
 
 from ros2model.core.generator.generator_core import GeneratorCore
 import typing as t
+import pkg_resources
+import os
 
-Template_Folder = Path(__file__).parent.parent.parent.parent.resolve() / "templates"
+#Template_Folder = Path(__file__).parent.parent.parent.parent.resolve() / "templates"
+Package_path=os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(pkg_resources.resource_filename('ros2model', '')))))
+Template_Folder = Path(os.path.join(os.path.join(os.path.join(Package_path,'share'),'ros2model'),'templates'))
 Template = Path(Template_Folder / "component.ros2.j2")
 
 

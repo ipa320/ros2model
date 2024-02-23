@@ -32,6 +32,10 @@ setup(
             ["templates/component.ros2.j2", "templates/rossystem.rossystem.j2"],
         ),
     ],
+    package_data={
+        package_name: ['templates/*.j2'],
+    },
+    include_package_data=True,
     install_requires=[
         "jinja2",
         "pydantic",
