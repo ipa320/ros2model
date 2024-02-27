@@ -10,6 +10,11 @@ if [ ! -d venv ]; then
     ${pycmd:?Could not determine python executable} -m venv venv
 fi
 
-venv/*/pip install -e src/ros2model
+if [ "$GIT_ACTION" = true ]; then
+    venv/*/pip install -e .
+    venv/*/pip install --find-links wheels -e .
+else
+    venv/*/pip install -e src/ros2model
 
-venv/*/pip install --find-links wheels -e src/ros2model
+    venv/*/pip install --find-links wheels -e src/ros2model
+fi
