@@ -43,10 +43,6 @@ test_model = Package(
     ],
 )
 
-from devtools import pprint
-
-# pprint(test_model)
-
 test_dir = "test"
 output_folder = Path(__file__).parent.parent / "outputs"
 

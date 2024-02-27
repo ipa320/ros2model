@@ -25,7 +25,7 @@ try:
     from ament_index_python import get_package_share_directory
 
     Template_Folder_ROS = Path(get_package_share_directory("ros2model") + "/templates")
-    Template_ROS = Path(Template_Folder_ROS / "message.ros2.j2")
+    Template_ROS = Path(Template_Folder_ROS / "message.ros.j2")
 except ImportError:
     Template_ROS = None
 
@@ -35,7 +35,7 @@ class MessageGenerator(GeneratorCore):
         if template_path != None:
             self.template_path = Path(template_path).resolve()
         elif Template_ROS != None and Template_ROS.is_file():
-            self.template_path = Template
+            self.template_path = Template_ROS
         elif Template.is_file():
             self.template_path = Template
         else:
