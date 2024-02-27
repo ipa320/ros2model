@@ -36,7 +36,7 @@ class SystemGenerator(GeneratorCore):
         if template_path != None:
             self.template_path = Path(template_path).resolve()
         elif Template_ROS != None and Template_ROS.is_file():
-            self.template_path = Template
+            self.template_path = Template_ROS
         elif Template.is_file():
             self.template_path = Template
         else:
