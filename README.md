@@ -16,22 +16,29 @@ In addition, the Toolchain offers automatic extractors of the models from the or
 For the static code analysis we made available a web interface able to inspect code hosted on Git and get its model representation as feedback [http://ros-model.seronet-project.de/](http://ros-model.seronet-project.de/).
 
 
-## Install
+## Install with ROS
 1. clone this repository into the source folder in your workspace, such as:
-    ```
-    ws/src/ros2model
-    ```
-2. enter the folder "ws/src/ros2model"
+   ```
+   ws/src/ros2model
+   ```
+2. Source ROS workspace
+   ```
+   source /opt/ros/humble/setup.bash
+   ```
+3. Back to the folder "ws", create venv
+   ```
+   python3 -m venv venv --system-site-packages --symlinks
+   ```
+4. Install poetry and install dependencies
    run
-    ```
-    ./install.sh
-    ```
-
-3. go back to "ws/":
-    compile it as ros package
-    ```
-    colcon build --packages-up-to ros2model --symlink-install
-    ```
+   ```
+   pip install poetry
+   poetry install -C src/ros2model/
+   ```
+5. compile it as ROS package
+   ```
+   colcon build --packages-select ros2model --symlink-install
+   ```
 
 ## Run
 1. Create ros node models from a run-time system:
