@@ -24,4 +24,17 @@
       	- "{{ interface.name }}": sc-> "TODO::{{ interface.name }}"
       {% endfor %}
       {% endif %}
+      {% if node.parameter | length > 0 %}
+      parameters:
+        {% for parameter in node.parameter %}
+        - {{ parameter.name }}: "{{ node.name.full_name }}.{{ parameter.name }}"
+          {% if parameter.type == "String" %}
+          value: "{{ parameter.value }}"
+          {% elif parameter.type == "Boolean" %}
+          value: {{ parameter.value | lower }}
+          {% else %}
+          value: {{ parameter.value }}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
   {% endfor %}
