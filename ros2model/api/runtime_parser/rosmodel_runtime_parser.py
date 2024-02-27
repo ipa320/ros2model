@@ -10,11 +10,13 @@ from pathlib import Path
 from rclpy.topic_endpoint_info import TopicEndpointInfo
 import rclpy
 from rcl_interfaces.msg import ParameterType
+import ros2model.core.utils as utils
 
 from collections import namedtuple
 from ros2param.api import (
     call_list_parameters,
     call_describe_parameters,
+    call_get_parameters,
 )
 
 Topic_BlackList = ["/parameter_events", "/rosout"]
@@ -38,11 +40,11 @@ def get_parameter_type_string(parameter_type):
         ParameterType.PARAMETER_INTEGER: "Integer",
         ParameterType.PARAMETER_DOUBLE: "Double",
         ParameterType.PARAMETER_STRING: "String",
-        ParameterType.PARAMETER_BYTE_ARRAY: "Array: Byte",
-        ParameterType.PARAMETER_BOOL_ARRAY: "Array: Boolean",
-        ParameterType.PARAMETER_INTEGER_ARRAY: "Array: Integer",
-        ParameterType.PARAMETER_DOUBLE_ARRAY: "Array: Double",
-        ParameterType.PARAMETER_STRING_ARRAY: "Array: String",
+        ParameterType.PARAMETER_BYTE_ARRAY: "Array[Byte]",
+        ParameterType.PARAMETER_BOOL_ARRAY: "Array[Boolean]",
+        ParameterType.PARAMETER_INTEGER_ARRAY: "Array[Integer]",
+        ParameterType.PARAMETER_DOUBLE_ARRAY: "Array[Double]",
+        ParameterType.PARAMETER_STRING_ARRAY: "Array[String]",
         ParameterType.PARAMETER_NOT_SET: "Any",
     }
     return mapping[parameter_type]
@@ -275,12 +277,18 @@ class RunTimeNode(ROSModel.Node):
                 node_name=self.name.full_name,
                 parameter_names=sorted_names,
             )
-            for descriptor in des_resp.descriptors:
+
+            get_parameters_response = call_get_parameters(
+                node=node, node_name=self.name.full_name, parameter_names=sorted_names
+            )
+
+            for param_name, pvalue in zip(sorted_names, get_parameters_response.values):
                 self.parameter.append(
                     ROSModel.Parameter(
-                        name=descriptor.name,
+                        name=param_name,
                         namespace=self.name.namespace,
-                        type=get_parameter_type_string(descriptor.type),
+                        type=get_parameter_type_string(pvalue.type),
+                        value=str(utils.get_param_value(pvalue)),
                     )
                 )
 
