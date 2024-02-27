@@ -1,4 +1,7 @@
 {{ model.name }}:
+  {% if model.fromGitRepo != none %}
+  fromGitRepo: '{{ model.fromGitRepo }}'
+  {% endif %}
   artifacts:
   {% for artifact in model.artifact %}
     {{ artifact.name }}:

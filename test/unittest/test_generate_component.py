@@ -6,6 +6,7 @@ from ros2model.core.metamodels.metamodel_ros import *
 
 test_model = Package(
     name="test_model",
+    fromGitRepo="git_url",
     artifact=[
         Artifact(
             name="map_server",
@@ -52,6 +53,7 @@ output_folder = "outputs"
 
 expect_result = """
 test_model:
+  fromGitRepo: 'git_url'
   artifacts:
     map_server:
       node: /map_server

@@ -1,4 +1,5 @@
 test_model:
+  fromGitRepo: 'git_url'
   artifacts:
     map_server:
       node: /map_server
