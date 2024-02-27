@@ -29,7 +29,12 @@ setup(
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         (
             "share/" + package_name + "/templates",
-            ["templates/component.ros2.j2", "templates/rossystem.rossystem.j2"],
+            [
+                "templates/component.ros2.j2",
+                "templates/rossystem.rossystem.j2",
+                "templates/runtime_rossystem.rossystem.j2",
+                "templates/message.ros.j2",
+            ],
         ),
     ],
     install_requires=[
