@@ -59,6 +59,15 @@
         {% for parameter in node.parameter %}
         '{{ parameter.name }}':
           type: {{ parameter.type }}
+          {% if parameter.value != none %}
+          {% if parameter.type == "String" %}
+          value: "{{ parameter.value }}"
+          {% elif parameter.type == "Boolean" %}
+          value: {{ parameter.value | lower }}
+          {% else %}
+          value: {{ parameter.value }}
+          {% endif %}
+          {% endif %}
         {% endfor %}
       {% endif %}
       {% endfor %}
