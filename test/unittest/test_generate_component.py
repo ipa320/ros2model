@@ -45,7 +45,7 @@ test_model = Package(
 
 from devtools import pprint
 
-pprint(test_model)
+# pprint(test_model)
 
 test_dir = "test"
 output_folder = "outputs"
@@ -79,7 +79,7 @@ test_model:
 """
 
 
-class test_message_generator(unittest.TestCase):
+class test_component_generator(unittest.TestCase):
     def setUp(self) -> None:
         self.generator = ComponentGenerator()
         self.test_dir = Path(test_dir)

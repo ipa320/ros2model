@@ -4,7 +4,8 @@ import yaml
 from ros2model.core.generator.file_generator import FileGenerator
 from pathlib import Path
 
-test_dir = "test"
+current_path = Path(__file__)
+test_dir = current_path.parent.parent
 template_dir = "resource/templates"
 template_file = "test_template.j2"
 output_folder = "outputs"
