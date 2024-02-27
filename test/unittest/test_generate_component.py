@@ -48,7 +48,7 @@ from devtools import pprint
 # pprint(test_model)
 
 test_dir = "test"
-output_folder = "outputs"
+output_folder = Path(__file__).parent.parent / "outputs"
 
 expect_result = """
 test_model:
@@ -75,6 +75,7 @@ test_model:
       parameters:
         'shadows/min_angle':
           type: Double
+          value: -1.52
 
 """
 

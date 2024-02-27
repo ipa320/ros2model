@@ -22,3 +22,4 @@ test_model:
       parameters:
         'shadows/min_angle':
           type: Double
+          value: -1.52

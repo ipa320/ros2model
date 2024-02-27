@@ -46,7 +46,7 @@ test_interfaces = Package(
 )
 
 test_dir = "test"
-output_folder = "outputs"
+output_folder = Path(__file__).parent.parent / "outputs"
 
 expect_result = """
 test_interfaces:
