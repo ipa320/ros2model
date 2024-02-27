@@ -7,9 +7,9 @@ if [ ! -d venv ]; then
             break
         fi
     done
-    ${pycmd:?Could not determine python executable} -mvenv venv
+    ${pycmd:?Could not determine python executable} -m venv venv
 fi
 
-venv/*/pip install -e .
+venv/*/pip install -e src/ros2model
 
-venv/*/pip install --find-links wheels -e .
+venv/*/pip install --find-links wheels -e src/ros2model
