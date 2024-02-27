@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ros2model"
+version = "0.0.1"
+description = "Parser for ros model"
+authors = ["Ruichao Wu <ruichao.wu@ipa.fraunhofer.de>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+jinja2 = "^3.1.3"
+pydantic = "^2.6.2"
+pyyaml = "^6.0.1"
+devtools = "^0.12.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
