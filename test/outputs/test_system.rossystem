@@ -9,3 +9,6 @@ test_system:
       	- "static_map": ac-> "TODO::static_map"
       	- "static_map": ss-> "TODO::static_map"
       	- "static_map": sc-> "TODO::static_map"
+      parameters:
+        - shadows/min_angle: "/map_server.shadows/min_angle"
+          value: -1.52

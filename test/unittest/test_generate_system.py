@@ -37,7 +37,7 @@ from devtools import pprint
 pprint(test_model)
 
 test_dir = "test"
-output_folder = "outputs"
+output_folder = Path(__file__).parent.parent / "outputs"
 
 expect_result = """
 test_system:
@@ -51,6 +51,9 @@ test_system:
       	- "static_map": ac-> "TODO::static_map"
       	- "static_map": ss-> "TODO::static_map"
       	- "static_map": sc-> "TODO::static_map"
+      parameters:
+        - shadows/min_angle: "/map_server.shadows/min_angle"
+          value: -1.52
 
 """
 

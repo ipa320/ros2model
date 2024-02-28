@@ -25,9 +25,10 @@ For the static code analysis we made available a web interface able to inspect c
    ```
    source /opt/ros/humble/setup.bash
    ```
-3. Back to the folder "ws", create venv
+3. Back to the folder "ws", create and active venv
    ```
    python3 -m venv venv --system-site-packages --symlinks
+   source venv/bin/activate
    ```
 4. Install poetry and install dependencies
    run
@@ -37,7 +38,7 @@ For the static code analysis we made available a web interface able to inspect c
    ```
 5. compile it as ROS package
    ```
-   colcon build --packages-select ros2model --symlink-install
+   python -m colcon build --packages-select ros2model --symlink-install
    ```
 
 ## Run
