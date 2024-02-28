@@ -43,7 +43,7 @@ expect_result = """
 test_system:
   nodes:
     "/map_server":
-      from: "TODO./map_server"
+      from: "/map_server"
       interfaces:
       	- "map_metadata": pub-> "TODO::map_metadata"
       	- "map": pub-> "TODO::map"
@@ -58,7 +58,7 @@ test_system:
 """
 
 
-class test_message_generator(unittest.TestCase):
+class test_system_generator(unittest.TestCase):
     def setUp(self) -> None:
         self.generator = SystemGenerator()
         self.test_dir = Path(test_dir)
@@ -72,6 +72,7 @@ class test_message_generator(unittest.TestCase):
         )
         with open(Path(self.output_dir / f"{test_model.name}.rossystem"), "r") as file:
             data = file.read()
+
         self.assertEqual(expect_result.strip(), data.strip())
 
 
