@@ -40,6 +40,14 @@ For the static code analysis we made available a web interface able to inspect c
    ```
    python -m colcon build --packages-select ros2model --symlink-install
    ```
+   ```
+   source install/local_setup.bash
+   ```
+6. config python path
+   in this case we are using python3.10 in venv
+   ```
+   export PYTHONPATH=$PYTHONPATH:$(pwd)/venv/lib/python3.10/site-packages/
+   ```
 
 ## Run
 1. Create ros node models from a run-time system:
