@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 requests = "^2.31.0"
-jinja2 = "^3.1.3"
+jinja2 = "^3.1.4"
 pydantic = "^2.6.2"
 pyyaml = "^6.0.1"
 devtools = "^0.12.2"
