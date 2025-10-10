@@ -3,7 +3,7 @@
   {% for artifact in model.artifact %}
     {{ artifact.name }}:
       {% for node in artifact.node %}
-      node: {{ node.name.full_name }}
+      node: {{ node.name.full_name.lstrip('/') }}
       {% if node.publisher | length >0 %}
       publishers:
         {% for interface in node.publisher %}
