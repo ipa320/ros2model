@@ -1,33 +1,53 @@
 {{ model.name }}:
   nodes:
+  {% set collected = namespace(pub=[], sub=[], srv_server=[], srv_client=[], action_server=[], action_client=[]) %}
   {% for node in model.nodes %}
-    "{{ node.name.full_name }}":
-      from: "TODO.{{ node.name.full_name }}"
-      {% if node.publisher | length > 0 or node.subscriber | length > 0 or node.actionserver | length > 0 or node.actionclient | length > 0 or node.serviceserver | length > 0 or node.serviceclient | length > 0%}
+    {% set pkg = node.package if node.package else 'TODO' %}
+    {% set node_identifier = node.name.full_name.lstrip('/') %}
+    {% set exec_name = node_identifier.lstrip('/') if node_identifier else '' %}
+    {% if exec_name == '' %}
+      {% set exec_name = node_identifier %}
+    {% endif %}
+    {% set publisher_names = node.publisher | map(attribute='name') | list %}
+    "{{ node_identifier }}":
+      from: "{{ pkg }}.{{ exec_name }}"
+      {% set has_interfaces = node.publisher | length > 0 or node.subscriber | length > 0 or node.actionserver | length > 0 or node.actionclient | length > 0 or node.serviceserver | length > 0 or node.serviceclient | length > 0 %}
+      {% if has_interfaces %}
       interfaces:
-      {% for interface in node.publisher %}
-      	- "{{ interface.name }}": pub-> "TODO::{{ interface.name }}"
-      {% endfor %}
-      {% for interface in node.subscriber %}
-      	- "{{ interface.name }}": sub-> "TODO::{{ interface.name }}"
-      {% endfor %}
-      {% for interface in node.actionserver %}
-      	- "{{ interface.name }}": as-> "TODO::{{ interface.name }}"
-      {% endfor %}
-      {% for interface in node.actionclient %}
-      	- "{{ interface.name }}": ac-> "TODO::{{ interface.name }}"
-      {% endfor %}
-      {% for interface in node.serviceserver %}
-      	- "{{ interface.name }}": ss-> "TODO::{{ interface.name }}"
-      {% endfor %}
-      {% for interface in node.serviceclient %}
-      	- "{{ interface.name }}": sc-> "TODO::{{ interface.name }}"
-      {% endfor %}
+        {% for interface in node.publisher %}
+          {% set collected.pub = collected.pub + [{'topic': interface.full_name, 'display': interface.name, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ interface.name }}": pub-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
+        {% for interface in node.subscriber %}
+          {% if interface.name in publisher_names %}
+            {% set sub_display = 'sub_' ~ interface.name %}
+          {% else %}
+            {% set sub_display = interface.name %}
+          {% endif %}
+          {% set collected.sub = collected.sub + [{'topic': interface.full_name, 'display': sub_display, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ sub_display }}": sub-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
+        {% for interface in node.actionserver %}
+          {% set collected.action_server = collected.action_server + [{'topic': interface.full_name, 'display': interface.name, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ interface.name }}": as-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
+        {% for interface in node.actionclient %}
+          {% set collected.action_client = collected.action_client + [{'topic': interface.full_name, 'display': interface.name, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ interface.name }}": ac-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
+        {% for interface in node.serviceserver %}
+          {% set collected.srv_server = collected.srv_server + [{'topic': interface.full_name, 'display': interface.name, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ interface.name }}": ss-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
+        {% for interface in node.serviceclient %}
+          {% set collected.srv_client = collected.srv_client + [{'topic': interface.full_name, 'display': interface.name, 'type': interface.type, 'node': node_identifier}] %}
+        - "{{ interface.name }}": sc-> "{{ exec_name }}::{{ interface.name }}"
+        {% endfor %}
       {% endif %}
       {% if node.parameter | length > 0 %}
       parameters:
         {% for parameter in node.parameter %}
-        - {{ parameter.name }}: "{{ node.name.full_name }}.{{ parameter.name }}"
+        - "{{ parameter.name }}": "{{ exec_name }}::{{ parameter.name }}"
           {% if parameter.type == "String" %}
           value: "{{ parameter.value }}"
           {% elif parameter.type == "Boolean" %}
@@ -38,3 +58,31 @@
         {% endfor %}
       {% endif %}
   {% endfor %}
+  {% set connections = namespace(items=[]) %}
+  {% for pub in collected.pub %}
+    {% for sub in collected.sub %}
+      {% if pub.topic == sub.topic and pub.type == sub.type %}
+        {% set connections.items = connections.items + [[pub.node ~ '.' ~ pub.display, sub.node ~ '.' ~ sub.display]] %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% for srv in collected.srv_server %}
+    {% for client in collected.srv_client %}
+      {% if srv.topic == client.topic and srv.type == client.type %}
+        {% set connections.items = connections.items + [[srv.node ~ '.' ~ srv.display, client.node ~ '.' ~ client.display]] %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% for action_srv in collected.action_server %}
+    {% for action_client in collected.action_client %}
+      {% if action_srv.topic == action_client.topic and action_srv.type == action_client.type %}
+        {% set connections.items = connections.items + [[action_srv.node ~ '.' ~ action_srv.display, action_client.node ~ '.' ~ action_client.display]] %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% if connections.items %}
+  connections:
+  {% for pair in connections.items %}
+    - ["{{ pair[0] }}", "{{ pair[1] }}"]
+  {% endfor %}
+  {% endif %}
