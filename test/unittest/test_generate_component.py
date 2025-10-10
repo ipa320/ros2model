@@ -54,7 +54,7 @@ expect_result = """
 test_model:
   artifacts:
     map_server:
-      node: /map_server
+      node: map_server
       publishers:
         'map_metadata':
           type: 'nav_msgs/msg/MapMetaData'
