@@ -1,4 +1,6 @@
+import os
 import re
+import shutil
 import subprocess
 import ros2model.core.metamodels.metamodel_ros as ROSModel
 from ros2model.core.metamodels.metamodel_ros import set_full_name
@@ -13,11 +15,25 @@ from rcl_interfaces.msg import ParameterType
 import ros2model.core.utils as utils
 
 from collections import namedtuple
-from ros2param.api import (
-    call_list_parameters,
-    call_describe_parameters,
-    call_get_parameters,
-)
+
+try:
+    from rclpy.parameter_client import AsyncParameterClient
+except ImportError:
+    AsyncParameterClient = None
+    try:
+        from ros2param.api import (
+            call_list_parameters,
+            call_describe_parameters,
+            call_get_parameters,
+        )
+    except ImportError:
+        call_list_parameters = None
+        call_describe_parameters = None
+        call_get_parameters = None
+else:
+    call_list_parameters = None
+    call_describe_parameters = None
+    call_get_parameters = None
 
 Topic_BlackList = ["/parameter_events", "/rosout"]
 Service_BlackList = [
@@ -32,6 +48,51 @@ Service_BlackList = [
 TopicInfoVerbose = namedtuple("TopicInfoVerbose", ("full_name", "info"))
 
 ParameterReg = "^qos_overrides\..*$"
+
+
+def detect_ros_distro():
+    env_distro = os.environ.get("ROS_DISTRO")
+    if env_distro:
+        return env_distro.lower()
+
+    rosversion_bin = shutil.which("rosversion")
+    if rosversion_bin:
+        try:
+            completed = subprocess.run(
+                [rosversion_bin, "-d"], check=False, stdout=subprocess.PIPE
+            )
+            output = completed.stdout.decode("utf-8").strip().lower()
+            return output or None
+        except (OSError, subprocess.SubprocessError):
+            return None
+
+    return None
+
+
+ROS_DISTRO = detect_ros_distro()
+
+PARAMETER_SERVICE_TIMEOUT = 1.0
+
+
+def _with_parameter_client(node, remote_node_name):
+    if AsyncParameterClient is None:
+        return None
+    client = AsyncParameterClient(node, remote_node_name)
+    if not client.wait_for_services(timeout_sec=PARAMETER_SERVICE_TIMEOUT):
+        return None
+    return client
+
+
+def _await_future(node, future):
+    rclpy.spin_until_future_complete(
+        node, future, timeout_sec=PARAMETER_SERVICE_TIMEOUT
+    )
+    if not future.done():
+        return None
+    try:
+        return future.result()
+    except Exception:
+        return None
 
 
 def get_parameter_type_string(parameter_type):
@@ -90,12 +151,14 @@ def parse_interface(
     )
     interface_name = get_interface_name(node.name.namespace, topic_info.name)
 
+    existing = getattr(node, typee)
+    if any(item.name == interface_name for item in existing):
+        return
     interface = ROSModel.InterfaceTypeImpl(
         namespace=node.name.namespace,
         name=interface_name,
         type=topic_info.types[0],
     )
-    # print("get interface:", interface)
     getattr(node, typee).append(interface)
 
 
@@ -114,9 +177,13 @@ def parse_interface_verbose(
         print(
             f"topic name again: {topic_endpoint_info.full_name[len(node.name.namespace) :]}\n"
         )
+        existing = getattr(node, typee)
+        interface_name = set_name(node.name.namespace, topic_endpoint_info.full_name)
+        if any(item.name == interface_name for item in existing):
+            return
         interface = ROSModel.InterfaceTypeImpl(
             namespace=node.name.namespace,
-            name=set_name(node.name.namespace, topic_endpoint_info.full_name),
+            name=interface_name,
             type=topic_endpoint_info.info.topic_type,
             qos=ROSModel.QualityOfService(
                 deadline=topic_endpoint_info.info.qos_profile.deadline.nanoseconds,
@@ -138,10 +205,18 @@ class NodeArgs(BaseModel):
 
 
 class RunTimeNode(ROSModel.Node):
-    pass
+    package: str | None = None
+    executable: str | None = None
 
     def __init__(self, *, node: ROSModel.Node, **data):
         super().__init__(name=node.name, **data)
+        package_name, executable_name = utils.find_process_by_node_name(
+            self.name.name, self.name.namespace
+        )
+        if package_name != "TODO":
+            self.package = package_name
+        if executable_name != "TODO":
+            self.executable = executable_name
 
     class Config:
         arbitrary_types_allowed = True
@@ -253,44 +328,84 @@ class RunTimeNode(ROSModel.Node):
             pass
 
     def get_parameters(self, node, include_hidden_nodes=False):
-        # for humble
-        new_proc = subprocess.Popen(["rosversion", "-d"], stdout=subprocess.PIPE)
-        version_str = new_proc.communicate()[0].decode("utf-8").rstrip("\n")
+        version_str = ROS_DISTRO or detect_ros_distro()
 
+        client = None
         sorted_names = []
         if version_str == "humble":
             sorted_names = self.get_parameter_names_humble(node, include_hidden_nodes)
 
-        if version_str == "rolling":
-            response = call_list_parameters(node=node, node_name=self.name.full_name)
-            if response.result() != None:
-                param_names = response.result().result.names
-                sorted_names = sorted(param_names)
+        if version_str != "humble":
+            client = _with_parameter_client(node, self.name.full_name)
+            if client is not None:
+                list_future = client.list_parameters()
+                list_response = _await_future(node, list_future)
+                if list_response is not None and list_response.result is not None:
+                    sorted_names = sorted(list_response.result.names)
+            elif call_list_parameters is not None:
+                response = call_list_parameters(
+                    node=node, node_name=self.name.full_name
+                )
+                if response is not None and response.result() is not None:
+                    param_names = response.result().result.names
+                    sorted_names = sorted(param_names)
 
         regex_filter = re.compile(ParameterReg)
         if len(sorted_names) != 0:
             sorted_names = [
                 name for name in sorted_names if not regex_filter.match(name)
             ]
-            des_resp = call_describe_parameters(
-                node=node,
-                node_name=self.name.full_name,
-                parameter_names=sorted_names,
-            )
+            client = client or _with_parameter_client(node, self.name.full_name)
+            if client is not None:
+                describe_future = client.describe_parameters(sorted_names)
+                describe_response = _await_future(node, describe_future)
 
-            get_parameters_response = call_get_parameters(
-                node=node, node_name=self.name.full_name, parameter_names=sorted_names
-            )
+                get_future = client.get_parameters(sorted_names)
+                get_response = _await_future(node, get_future)
 
-            for param_name, pvalue in zip(sorted_names, get_parameters_response.values):
-                self.parameter.append(
-                    ROSModel.Parameter(
-                        name=param_name,
-                        namespace=self.name.namespace,
-                        type=get_parameter_type_string(pvalue.type),
-                        value=str(utils.get_param_value(pvalue)),
-                    )
+                if (
+                    describe_response is not None
+                    and get_response is not None
+                    and getattr(get_response, "values", None) is not None
+                ):
+                    for param_name, pvalue in zip(sorted_names, get_response.values):
+                        self.parameter.append(
+                            ROSModel.Parameter(
+                                name=param_name,
+                                namespace=self.name.namespace,
+                                type=get_parameter_type_string(pvalue.type),
+                                value=str(utils.get_param_value(pvalue)),
+                            )
+                        )
+            elif (
+                call_describe_parameters is not None and call_get_parameters is not None
+            ):
+                des_resp = call_describe_parameters(
+                    node=node,
+                    node_name=self.name.full_name,
+                    parameter_names=sorted_names,
                 )
+                get_parameters_response = call_get_parameters(
+                    node=node,
+                    node_name=self.name.full_name,
+                    parameter_names=sorted_names,
+                )
+                if (
+                    des_resp is not None
+                    and get_parameters_response is not None
+                    and getattr(get_parameters_response, "values", None) is not None
+                ):
+                    for param_name, pvalue in zip(
+                        sorted_names, get_parameters_response.values
+                    ):
+                        self.parameter.append(
+                            ROSModel.Parameter(
+                                name=param_name,
+                                namespace=self.name.namespace,
+                                type=get_parameter_type_string(pvalue.type),
+                                value=str(utils.get_param_value(pvalue)),
+                            )
+                        )
 
     def get_parameter_names_humble(self, node, include_hidden_nodes=False):
         from rcl_interfaces.srv import ListParameters
