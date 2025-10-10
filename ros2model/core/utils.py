@@ -1,18 +1,121 @@
+from pathlib import Path
+
 import psutil
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterType
 
 
 def find_process_by_node_name(node_name, namespace):
-    for process in psutil.process_iter(["pid", "cmdline"]):
+    """Best-effort lookup for the package/executable running a given node.
+
+    This inspects the process table and matches processes whose ROS remap arguments
+    or derived executable names align with the provided node name and namespace.
+    """
+
+    def extract_remaps(cmdline):
+        remaps = {}
+        for arg in cmdline:
+            if not isinstance(arg, str):
+                continue
+            if arg.startswith("__node:="):
+                remaps["__node"] = arg.split(":=", 1)[1]
+            elif arg.startswith("__ns:="):
+                value = arg.split(":=", 1)[1]
+                remaps["__ns"] = value if value.startswith("/") else f"/{value}"
+        return remaps
+
+    def extract_package_exec_from_path(path_str):
+        if not path_str or not isinstance(path_str, str):
+            return None, None
+        if "/lib/" not in path_str and "\\lib\\" not in path_str:
+            return None, None
         try:
-            cmdline = process.info["cmdline"]
-            if namespace in str(cmdline) and node_name in str(cmdline):
-                cmdline_list = cmdline[0].split("/")
-                if len(cmdline_list) >= 3:
-                    return cmdline_list[-2], cmdline_list[-1]
+            path = Path(path_str)
+        except (TypeError, ValueError):
+            return None, None
+        parts = path.parts
+        for idx, part in enumerate(parts):
+            if part == "lib" and idx + 2 < len(parts):
+                package = parts[idx + 1]
+                executable = parts[idx + 2]
+                if executable:
+                    return package, executable
+        return None, path.name if path.name else None
+
+    def extract_package_and_executable(cmdline, exe_path):
+        for arg in cmdline:
+            pkg, exe = extract_package_exec_from_path(arg)
+            if pkg or exe:
+                return pkg, exe
+        pkg, exe = extract_package_exec_from_path(exe_path)
+        if exe and exe.startswith("python"):
+            exe = None
+        return pkg, exe
+
+    def possible_node_names(cmdline, exe_path):
+        names = set()
+
+        def add_candidate(value):
+            if not value or not isinstance(value, str):
+                return
+            if value.startswith("-"):
+                return
+            names.add(Path(value).stem)
+
+        if exe_path:
+            add_candidate(exe_path)
+        for arg in cmdline:
+            if not isinstance(arg, str):
+                continue
+            if arg.startswith("__node:="):
+                names.add(arg.split(":=", 1)[1])
+                continue
+            if arg.startswith("__ns:=") or arg in {"--ros-args", "--remap", "-r"}:
+                continue
+            add_candidate(arg)
+        return {name for name in names if name}
+
+    if not namespace:
+        namespace = "/"
+    elif namespace != "/" and not namespace.startswith("/"):
+        namespace = f"/{namespace}"
+
+    for process in psutil.process_iter(["pid", "cmdline", "exe"]):
+        try:
+            cmdline = process.info.get("cmdline") or []
+            exe_path = process.info.get("exe")
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
+            continue
+
+        if not cmdline:
+            continue
+
+        remaps = extract_remaps(cmdline)
+        resolved_node = remaps.get("__node")
+        resolved_ns = remaps.get("__ns")
+
+        if resolved_node and resolved_node != node_name:
+            continue
+
+        if not resolved_ns:
+            try:
+                env_ns = process.environ().get("ROS_NAMESPACE")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                env_ns = None
+            resolved_ns = env_ns if env_ns else "/"
+
+        if resolved_ns != namespace:
+            continue
+
+        if not resolved_node:
+            candidate_names = possible_node_names(cmdline, exe_path)
+            if node_name not in candidate_names:
+                continue
+
+        package, executable = extract_package_and_executable(cmdline, exe_path)
+        if package or executable:
+            return package or "TODO", executable or "TODO"
+
     return "TODO", "TODO"
 
 
