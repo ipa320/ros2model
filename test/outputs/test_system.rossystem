@@ -1,14 +1,17 @@
 test_system:
   nodes:
-    "/map_server":
-      from: "TODO./map_server"
+    "map_server":
+      from: "TODO.map_server"
       interfaces:
-      	- "map_metadata": pub-> "TODO::map_metadata"
-      	- "map": pub-> "TODO::map"
-      	- "static_map": as-> "TODO::static_map"
-      	- "static_map": ac-> "TODO::static_map"
-      	- "static_map": ss-> "TODO::static_map"
-      	- "static_map": sc-> "TODO::static_map"
+        - "map_metadata": pub-> "map_server::map_metadata"
+        - "map": pub-> "map_server::map"
+        - "static_map": as-> "map_server::static_map"
+        - "static_map": ac-> "map_server::static_map"
+        - "static_map": ss-> "map_server::static_map"
+        - "static_map": sc-> "map_server::static_map"
       parameters:
-        - shadows/min_angle: "/map_server.shadows/min_angle"
+        - "shadows/min_angle": "map_server::shadows/min_angle"
           value: -1.52
+  connections:
+    - ["map_server.static_map", "map_server.static_map"]
+    - ["map_server.static_map", "map_server.static_map"]
