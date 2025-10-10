@@ -16,14 +16,21 @@ In addition, the Toolchain offers automatic extractors of the models from the or
 For the static code analysis we made available a web interface able to inspect code hosted on Git and get its model representation as feedback [http://ros-model.seronet-project.de/](http://ros-model.seronet-project.de/).
 
 
-## Install with ROS
+## Install with ROS 2 (Humble or Rolling)
 1. clone this repository into the source folder in your workspace, such as:
    ```
    ws/src/ros2model
    ```
 2. Source ROS workspace
+
+   Humble:
    ```
    source /opt/ros/humble/setup.bash
+   ```
+
+   Rolling:
+   ```
+   source /opt/ros/rolling/setup.bash
    ```
 3. Back to the folder "ws", create and active venv
    ```
@@ -44,67 +51,39 @@ For the static code analysis we made available a web interface able to inspect c
    source install/local_setup.bash
    ```
 6. config python path
-   in this case we are using python3.10 in venv
+   adjust the path to match the Python minor version in your virtual environment
    ```
-   export PYTHONPATH=$PYTHONPATH:$(pwd)/venv/lib/python3.10/site-packages/
+   export PYTHONPATH=$PYTHONPATH:$(pwd)/venv/lib/$(python3 -c 'import sys; print(f"python{sys.version_info.major}.{sys.version_info.minor}")')/site-packages/
    ```
 
 ## Run
-1. Create ros node models from a run-time system:
-    ```
+### Node models from a running system
+Generate component models for each node discovered at runtime. Use `--include-description` if you need the `robot_description` parameter in the exported file and `--from-launch` to refine package/executable data with launch files.
+```
+ros2 model node -o test/nodes --include-description --from-launch my_pkg/bringup.launch.py
+```
+More options:
+```
+ros2 model node -h
+```
 
-    ros2 model node -o test/nodes # it will save generated file in folder "test/nodes"
-    ```
+### System model from a running system
+Capture a full `.rossystem` model. The `--include-description` and `--from-launch` flags work the same way as for node models.
+```
+ros2 model system -o test/turtlesim.rossystem --include-description --from-launch turtlesim_gazebo/launch/sim_launch.py
+```
+More options:
+```
+ros2 model system -h
+```
 
-    You can run the command below to get more usage information.
-    ```
-    ros2 model node -h
-    ```
-
-    ```
-    usage: ros2 model node [-h] [--spin-time SPIN_TIME] [-s] [--no-daemon] [-o OUTPUT_FOLDER] [--include_hidden_nodes]
-                        [--include_hidden_interfaces]
-
-    Create .ros2 for each node in a runtime system
-
-    options:
-    -h, --help            show this help message and exit
-    --spin-time SPIN_TIME
-                            Spin time in seconds to wait for discovery (only applies when not using an already running daemon)
-    -s, --use-sim-time    Enable ROS simulation time
-    --no-daemon           Do not spawn nor use an already running daemon
-    -o OUTPUT_FOLDER, --output_folder OUTPUT_FOLDER
-                            The folder for storing the generated models.
-    --include_hidden_nodes
-                            Consider hidden nodes.
-    --include_hidden_interfaces
-                            Consider hidden topics, services or actions.
-    ```
-
-2. Create a ros system model from a run-time system:
-    ```
-    ros2 model system -o test/turtlesim # save the system in test folder and named as "turtlesim.rossystem"
-    ```
-    You can run the command below to get more usage information.
-    ```
-    ros2 model system -h
-    ```
-    ```
-    usage: ros2 model system [-h] [--spin-time SPIN_TIME] [-s] [--no-daemon] [-o OUTPUT_FILE] [--include_hidden_nodes]
-                         [--include_hidden_interfaces]
-
-    Create .rossystem for a runtime system
-
-    options:
-    -h, --help            show this help message and exit
-    --spin-time SPIN_TIME
-                            Spin time in seconds to wait for discovery (only applies when not using an already running daemon)
-    -s, --use-sim-time    Enable ROS simulation time
-    --no-daemon           Do not spawn nor use an already running daemon
-    -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                            The system model file path.
-    --include_hidden_nodes
-                            Consider hidden nodes.
-    --include_hidden_interfaces
-                            Consider hidden topics, services or actions.
-    ```
+### Interface models from package definitions
+Generate `.ros` models for topics, services, and actions declared in interface packages. Use `--all` to export every available package or pass `-p <package>` multiple times to target specific ones.
+```
+ros2 model msg --all -o test/interfaces
+ros2 model msg -p std_msgs -p geometry_msgs -o test/interfaces
+```
+More options:
+```
+ros2 model msg -h
+```
