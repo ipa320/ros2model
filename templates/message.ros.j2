@@ -3,7 +3,7 @@
   msgs:
 {% for spec in model.topics() %}
     {{ spec.name }}
-      message
+        message
 {% for part in spec.message.messagePart %}
 {% set type_str = part.type %}
 {% if '/' in type_str %}
@@ -15,9 +15,9 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
 {% endfor %}
@@ -26,7 +26,7 @@
   srvs:
 {% for spec in model.services() %}
     {{ spec.name }}
-      request
+        request
 {% if spec.request != None %}
 {% for part in spec.request.messagePart %}
 {% set type_str = part.type %}
@@ -39,13 +39,13 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
 {% endif %}
-      response
+        response
 {% for part in spec.response.messagePart %}
 {% set type_str = part.type %}
 {% if '/' in type_str %}
@@ -57,9 +57,9 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
 {% endfor %}
@@ -68,7 +68,7 @@
   actions:
 {% for spec in model.actions() %}
     {{ spec.name }}
-      goal
+        goal
 {% for part in spec.goal.messagePart %}
 {% set type_str = part.type %}
 {% if '/' in type_str %}
@@ -80,12 +80,12 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
-      result
+        result
 {% for part in spec.result.messagePart %}
 {% set type_str = part.type %}
 {% if '/' in type_str %}
@@ -97,12 +97,12 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
-      feedback
+        feedback
 {% if spec.feedback != None %}
 {% for part in spec.feedback.messagePart %}
 {% set type_str = part.type %}
@@ -115,9 +115,9 @@
 {% set base = type_str %}
 {% set suffix = '' %}
 {% endif %}
-        "{{ base }}"{{ suffix }} {{ part.data }}
+            "{{ base }}"{{ suffix }} {{ part.data }}
 {% else %}
-        {{ type_str }} {{ part.data }}
+            {{ type_str }} {{ part.data }}
 {% endif %}
 {% endfor %}
 {% endif %}
