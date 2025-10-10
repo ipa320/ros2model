@@ -24,8 +24,8 @@ Template = Path(Template_Folder / "message.ros.j2")
 try:
     from ament_index_python import get_package_share_directory
 
-    Template_Folder_ROS = Path(get_package_share_directory("ros2model") + "/templates")
-    Template_ROS = Path(Template_Folder_ROS / "message.ros2.j2")
+    Template_Folder_ROS = Path(get_package_share_directory("ros2model")) / "templates"
+    Template_ROS = Path(Template_Folder_ROS / "message.ros.j2")
 except ImportError:
     Template_ROS = None
 
