@@ -42,6 +42,31 @@ def set_full_name(namespace: str, name: str) -> str:
     return full_name
 
 
+def split_interface_name(node_namespace: str, full_name: str) -> tuple[str, str]:
+    """Return the namespace and local name for a ROS interface.
+
+    A namespaced node can still use global topics such as /tf. Only strip the
+    node namespace when the interface full name actually starts with it.
+    """
+    if not full_name:
+        return node_namespace or "/", full_name
+
+    namespace = node_namespace or "/"
+    if not namespace.startswith("/"):
+        namespace = f"/{namespace}"
+
+    normalized_full_name = full_name
+    if not normalized_full_name.startswith("/"):
+        normalized_full_name = f"/{normalized_full_name}"
+
+    if namespace != "/":
+        prefix = namespace.rstrip("/") + "/"
+        if normalized_full_name.startswith(prefix):
+            return namespace, normalized_full_name[len(prefix) :]
+
+    return "/", normalized_full_name.lstrip("/")
+
+
 class GraphName(BaseModel):
     name: str
     namespace: str
