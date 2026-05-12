@@ -34,7 +34,7 @@ def _format_field_type(field_type) -> str:
     array_suffix = ""
     array_start = type_repr.find("[")
     if array_start != -1:
-        array_suffix = type_repr[array_start:]
+        array_suffix = "[]"
         type_repr = type_repr[:array_start]
     else:
         array_start = None

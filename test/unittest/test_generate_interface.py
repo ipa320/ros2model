@@ -2,6 +2,16 @@ import unittest
 from pathlib import Path
 from ros2model.api.model_generator.message_generator import MessageGenerator
 from ros2model.core.metamodels.metamodel_ros import *
+from ros2model.verb.message import _format_field_type
+
+
+class FieldType:
+    def __init__(self, type_repr, pkg_name=None):
+        self.type_repr = type_repr
+        self.pkg_name = pkg_name
+
+    def __str__(self):
+        return self.type_repr
 
 test_interfaces = Package(
     name="test_interfaces",
@@ -86,6 +96,21 @@ class test_message_generator(unittest.TestCase):
         with open(Path(self.output_dir / f"{test_interfaces.name}.ros"), "r") as file:
             data = file.read()
         self.assertEqual(expect_result.strip(), data.strip())
+
+
+class test_field_type_formatting(unittest.TestCase):
+    def test_fixed_size_primitive_array_is_normalized(self):
+        self.assertEqual("float64[]", _format_field_type(FieldType("float64[36]")))
+        self.assertEqual("uint8[]", _format_field_type(FieldType("uint8[16]")))
+
+    def test_bounded_primitive_array_is_normalized(self):
+        self.assertEqual("float64[]", _format_field_type(FieldType("float64[<=3]")))
+
+    def test_bounded_message_array_is_normalized_and_qualified(self):
+        self.assertEqual(
+            "pkg/msg/SomeMsg[]",
+            _format_field_type(FieldType("pkg/SomeMsg[<=1]", pkg_name="pkg")),
+        )
 
 
 if __name__ == "__main__":
