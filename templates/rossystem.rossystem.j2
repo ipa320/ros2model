@@ -4,7 +4,7 @@
   {% for node in model.nodes %}
     {% set pkg_attr = node|attr('package') %}
     {% set pkg = pkg_attr if pkg_attr is not undefined and pkg_attr else 'TODO' %}
-    {% set node_identifier = node.name.full_name.lstrip('/') %}
+    {% set node_identifier = node.name.full_name %}
     {% set exec_attr = node|attr('executable') %}
     {% set exec_name = exec_attr if exec_attr is not undefined and exec_attr else (node_identifier.lstrip('/') if node_identifier else '') %}
     {% if exec_name == '' %}

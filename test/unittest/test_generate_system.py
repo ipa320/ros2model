@@ -42,8 +42,8 @@ output_folder = Path(__file__).parent.parent / "outputs"
 expect_result = """
 test_system:
   nodes:
-    "map_server":
-      from: "TODO.map_server"
+    "/map_server":
+      from: "TODO./map_server"
       interfaces:
         - "map_metadata": pub-> "map_server::map_metadata"
         - "map": pub-> "map_server::map"
@@ -55,8 +55,8 @@ test_system:
         - "shadows/min_angle": "map_server::shadows/min_angle"
           value: -1.52
   connections:
-    - ["map_server.static_map", "map_server.static_map"]
-    - ["map_server.static_map", "map_server.static_map"]
+    - ["/map_server.static_map", "/map_server.static_map"]
+    - ["/map_server.static_map", "/map_server.static_map"]
 
 """
 
