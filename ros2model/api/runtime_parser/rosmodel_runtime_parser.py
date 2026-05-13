@@ -3,7 +3,7 @@ import re
 import shutil
 import subprocess
 import ros2model.core.metamodels.metamodel_ros as ROSModel
-from ros2model.core.metamodels.metamodel_ros import set_full_name
+from ros2model.core.metamodels.metamodel_ros import set_full_name, split_interface_name
 import ros2node.api as ROS2Node
 from ros2cli.node.strategy import NodeStrategy
 
@@ -112,23 +112,9 @@ def get_parameter_type_string(parameter_type):
 
 
 def get_interface_name(node_namespace: str, interface_name: str):
-    """get interface relative name
-
-    Args:
-        node_namespace (str): _description_
-        interface_name (str): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    if node_namespace != "/":
-        prefix = f"{node_namespace}/"
-    else:
-        prefix = node_namespace
-
-    if interface_name.startswith(prefix):
-        interface_name = interface_name[len(prefix) :]
-    return interface_name
+    """get interface relative name"""
+    _, name = split_interface_name(node_namespace, interface_name)
+    return name
 
 
 def parse_interface(
@@ -149,13 +135,15 @@ def parse_interface(
         "parse_interface: interface_name:",
         get_interface_name(node.name.namespace, topic_info.name),
     )
-    interface_name = get_interface_name(node.name.namespace, topic_info.name)
+    interface_namespace, interface_name = split_interface_name(
+        node.name.namespace, topic_info.name
+    )
 
     existing = getattr(node, typee)
     if any(item.name == interface_name for item in existing):
         return
     interface = ROSModel.InterfaceTypeImpl(
-        namespace=node.name.namespace,
+        namespace=interface_namespace,
         name=interface_name,
         type=topic_info.types[0],
     )
@@ -163,10 +151,7 @@ def parse_interface(
 
 
 def set_name(namespace: str, full_name: str) -> str:
-    if namespace == "/":
-        name = full_name[1:]
-    else:
-        name = full_name[len(namespace) + 1 :]
+    _, name = split_interface_name(namespace, full_name)
     return name
 
 
@@ -178,11 +163,13 @@ def parse_interface_verbose(
             f"topic name again: {topic_endpoint_info.full_name[len(node.name.namespace) :]}\n"
         )
         existing = getattr(node, typee)
-        interface_name = set_name(node.name.namespace, topic_endpoint_info.full_name)
+        interface_namespace, interface_name = split_interface_name(
+            node.name.namespace, topic_endpoint_info.full_name
+        )
         if any(item.name == interface_name for item in existing):
             return
         interface = ROSModel.InterfaceTypeImpl(
-            namespace=node.name.namespace,
+            namespace=interface_namespace,
             name=interface_name,
             type=topic_endpoint_info.info.topic_type,
             qos=ROSModel.QualityOfService(

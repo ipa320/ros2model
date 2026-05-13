@@ -97,5 +97,58 @@ class test_component_generator(unittest.TestCase):
         self.assertEqual(expect_result.strip(), data.strip())
 
 
+class test_runtime_interface_names(unittest.TestCase):
+    def test_namespaced_topic_is_made_relative(self):
+        namespace, name = split_interface_name("/mavros", "/mavros/local_position/pose")
+
+        self.assertEqual("/mavros", namespace)
+        self.assertEqual("local_position/pose", name)
+        self.assertEqual(
+            "/mavros/local_position/pose",
+            Publisher(
+                namespace=namespace,
+                name=name,
+                type="geometry_msgs/msg/PoseStamped",
+            ).full_name,
+        )
+
+    def test_namespace_without_leading_slash_is_normalized(self):
+        self.assertEqual(
+            ("/mavros", "local_position/pose"),
+            split_interface_name("mavros", "/mavros/local_position/pose"),
+        )
+
+    def test_namespace_with_trailing_slash_is_normalized(self):
+        self.assertEqual(
+            ("/mavros/", "local_position/pose"),
+            split_interface_name("/mavros/", "/mavros/local_position/pose"),
+        )
+
+    def test_global_topic_from_namespaced_node_stays_global(self):
+        namespace, name = split_interface_name("/mavros", "/tf")
+
+        self.assertEqual("/", namespace)
+        self.assertEqual("tf", name)
+        self.assertEqual(
+            "/tf",
+            Publisher(
+                namespace=namespace,
+                name=name,
+                type="tf2_msgs/msg/TFMessage",
+            ).full_name,
+        )
+        self.assertEqual(("/", "tf_static"), split_interface_name("/mavros", "/tf_static"))
+
+    def test_root_namespace_topic_drops_leading_slash(self):
+        self.assertEqual(("/", "diagnostics"), split_interface_name("/", "/diagnostics"))
+
+    def test_relative_full_name_is_treated_as_root_topic(self):
+        self.assertEqual(("/", "diagnostics"), split_interface_name("/mavros", "diagnostics"))
+
+    def test_empty_full_name_is_preserved(self):
+        self.assertEqual(("/mavros", ""), split_interface_name("/mavros", ""))
+        self.assertEqual(("/", ""), split_interface_name("", ""))
+
+
 if __name__ == "__main__":
     unittest.main()
