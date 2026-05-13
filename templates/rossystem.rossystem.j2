@@ -12,7 +12,7 @@
     {% endif %}
     {% set publisher_names = node.publisher | map(attribute='name') | list %}
     "{{ node_identifier }}":
-      from: "{{ pkg }}.{{ exec_name }}"
+      from: "{{ pkg }}.{{ node_identifier }}"
       {% set has_interfaces = node.publisher | length > 0 or node.subscriber | length > 0 or node.actionserver | length > 0 or node.actionclient | length > 0 or node.serviceserver | length > 0 or node.serviceclient | length > 0 %}
       {% if has_interfaces %}
       interfaces:
